@@ -23,7 +23,8 @@
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.20.0"
+    "mongoose": "^8.20.0",
+    "slim-select": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

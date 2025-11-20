@@ -9,7 +9,6 @@ import {
 export const router = express.Router(); // Creates a router instance
 
 // /api/products - GET, POST, PUT, DELETE
-
 router.get("/", getProducts);
 router.post("/", addProduct);
 router.put("/:id", updateProduct);
