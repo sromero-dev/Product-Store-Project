@@ -7,11 +7,13 @@ dotenv.config();
 
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json()); // Allows JSON data
 
 app.use("/api/products", productRouter); // Product routes (redirect to products.route.js)
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   connectDB();
-  console.log("Server is running at http://localhost:3000");
+  console.log("Server is running at http://localhost:" + PORT);
 });
