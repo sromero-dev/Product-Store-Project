@@ -423,6 +423,10 @@ fetch("/api/products", {
 
 Esta arquitectura frontend proporciona una base sólida, escalable y mantenible para la aplicación Product Store, con excelentes prácticas de desarrollo React moderno.
 
+## Rules - `eslint.config.js`
+
+#TODO - Explicar
+
 ## Resumen del stack empleado
 
 **⚡ Desarrollo rápido** - Vite
