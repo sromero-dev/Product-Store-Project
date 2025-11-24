@@ -3,11 +3,10 @@ import {
   Heading,
   Box,
   Container,
-  useColorModeValue,
   Input,
   Button,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../components/ui/toaster-config";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
 
@@ -18,55 +17,48 @@ const CreatePage = () => {
     image: "",
   });
 
-  const toast = useToast();
-
   const { createProduct } = useProductStore();
+
   const handleAddProduct = async () => {
-    const { success, message } = await createProduct(newProduct); // Create the product
-    if (!success) {
-      // If the product creation fails
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        isClosable: true,
-      });
-    } else {
-      // If the product creation is successful
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        isClosable: true,
-      });
-    }
+    const { success, message } = await createProduct(newProduct);
+
+    toaster.create({
+      title: success ? "Success" : "Error",
+      description: message,
+      type: success ? "success" : "error",
+      duration: 3000,
+    });
+
+    if (!success) return;
+
     setNewProduct({
       name: "",
       price: "",
       image: "",
-    }); // Reset the form
+    });
   };
 
   return (
     <Container
-      maxW={"container.sm"}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-      minH={"80vh"}
+      maxW="container.sm"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      minH="80vh"
     >
-      <VStack w={"full"}>
-        <Heading as={"h1"} size={"2xl"} textAlign={"center"} mb={8}>
+      <VStack w="full">
+        <Heading as="h1" size="2xl" textAlign="center" mb={8}>
           Create New Product
         </Heading>
         <Box
-          w={"full"}
-          bg={useColorModeValue("white", "gray.800")}
+          w="50%"
+          bg="white"
+          _dark={{ bg: "gray.800" }}
           p={6}
-          rounded={"lg"}
-          shadow={"md"}
+          borderRadius="lg"
+          boxShadow="md"
         >
-          <VStack spacing={4}>
+          <VStack gap={4}>
             <Input
               placeholder="Product Name"
               name="name"
@@ -75,17 +67,15 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, name: e.target.value })
               }
             />
-
             <Input
               placeholder="Price"
               name="price"
-              type="number"
+              type="text"
               value={newProduct.price}
               onChange={(e) =>
                 setNewProduct({ ...newProduct, price: e.target.value })
               }
             />
-
             <Input
               placeholder="Image URL"
               name="image"
@@ -94,8 +84,7 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, image: e.target.value })
               }
             />
-
-            <Button colorScheme="blue" onClick={handleAddProduct} w="full">
+            <Button colorPalette="blue" onClick={handleAddProduct} w="full">
               Add Product
             </Button>
           </VStack>

@@ -1,75 +1,45 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Image,
-  Heading,
-  Text,
-  HStack,
-  VStack,
-  IconButton,
-  useColorModeValue,
-  useToast,
-  Modal,
-  useDisclosure,
-  ModalOverlay,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
   Button,
+  Heading,
+  HStack,
+  IconButton,
+  Image,
   Input,
+  Text,
+  VStack,
+  Dialog,
+  Portal,
 } from "@chakra-ui/react";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
+import { toaster } from "./ui/toaster-config";
 
 const ProductCard = ({ product }) => {
-  const textColor = useColorModeValue("gray.600", "gray.400");
-  const bg = useColorModeValue("white", "gray.800");
-
   const [updatedProduct, setUpdatedProduct] = useState(product);
-  const { updateProduct, deleteProduct } = useProductStore();
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [open, setOpen] = useState(false);
+  const { deleteProduct, updateProduct } = useProductStore();
 
   const handleDeleteProduct = async (pid) => {
     const { success, message } = await deleteProduct(pid);
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        isClosable: true,
-      });
-    }
+    toaster.create({
+      title: success ? "Success" : "Error",
+      description: message,
+      type: success ? "success" : "error",
+      duration: 3000,
+    });
   };
 
   const handleUpdateProduct = async (pid, updatedProduct) => {
-    const { success } = await updateProduct(pid, updatedProduct);
-    onClose();
-    if (!success) {
-      toast({
-        title: "Error",
-        description: "Product update failed",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Product updated successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    const { success, message } = await updateProduct(pid, updatedProduct);
+    setOpen(false);
+    toaster.create({
+      title: success ? "Success" : "Error",
+      description: message,
+      type: success ? "success" : "error",
+      duration: 3000,
+    });
   };
 
   return (
@@ -79,82 +49,117 @@ const ProductCard = ({ product }) => {
       overflow="hidden"
       transition="all 0.3s"
       _hover={{ transform: "translateY(-5px)", shadow: "xl" }}
-      bg={bg}
+      bg={{ base: "white", _dark: "gray.800" }}
     >
       <Image
         src={product.image}
         alt={product.name}
         h={48}
         w="full"
-        objectFit={"cover"}
+        objectFit="cover"
       />
+
       <Box p={4}>
-        <Heading as={"h3"} size="md" mb={2}>
+        <Heading as="h3" size="xl" mb={2}>
           {product.name}
         </Heading>
 
-        <Text fontWeight={"bold"} fontSize={"xl"} color={textColor} mb={4}>
+        <Text
+          fontWeight="bold"
+          fontSize="md"
+          color={{ base: "gray.600", _dark: "gray.200" }}
+          mb={4}
+        >
           {product.price}€
         </Text>
 
-        <HStack spacing={2}>
-          <IconButton icon={<EditIcon />} onClick={onOpen} colorScheme="blue" />
+        <HStack gap={2}>
           <IconButton
-            icon={<DeleteIcon />}
+            size={"sm"}
+            onClick={() => setOpen(true)}
+            colorPalette="blue"
+          >
+            <FaEdit iconSize={20} />
+          </IconButton>
+          <IconButton
             onClick={() => handleDeleteProduct(product._id)}
-            colorScheme="red"
-          />
+            colorPalette="red"
+            size={"sm"}
+          >
+            <FaTrash />
+          </IconButton>
         </HStack>
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalHeader>Update Product</ModalHeader>
-        <ModalBody>
-          <VStack spacing={4}>
-            <Input
-              placeholder="Product Name"
-              name="name"
-              value={updatedProduct.name}
-              onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, name: e.target.value })
-              }
-            />
+      <Dialog.Root
+        placement={"center"}
+        open={open}
+        onOpenChange={(e) => setOpen(e.open)}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Update Product</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4}>
+                  <Input
+                    placeholder="Product Name"
+                    name="name"
+                    value={updatedProduct.name}
+                    onChange={(e) =>
+                      setUpdatedProduct({
+                        ...updatedProduct,
+                        name: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    placeholder="Price"
+                    name="price"
+                    type="number"
+                    value={updatedProduct.price}
+                    onChange={(e) =>
+                      setUpdatedProduct({
+                        ...updatedProduct,
+                        price: e.target.value,
+                      })
+                    }
+                  />
+                  <Input
+                    placeholder="Image URL"
+                    name="image"
+                    value={updatedProduct.image}
+                    onChange={(e) =>
+                      setUpdatedProduct({
+                        ...updatedProduct,
+                        image: e.target.value,
+                      })
+                    }
+                  />
+                </VStack>
+              </Dialog.Body>
 
-            <Input
-              placeholder="Price"
-              name="price"
-              type="number"
-              value={updatedProduct.price}
-              onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, price: e.target.value })
-              }
-            />
-
-            <Input
-              placeholder="Image URL"
-              name="image"
-              value={product.image}
-              onChange={(e) =>
-                setUpdatedProduct({ ...updatedProduct, image: e.target.value })
-              }
-            />
-          </VStack>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            colorScheme="blue"
-            mr={3}
-            onClick={() => handleUpdateProduct(product._id, updatedProduct)}
-          >
-            Save
-          </Button>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-        </ModalFooter>
-        <ModalCloseButton />
-      </Modal>
+              <Dialog.Footer>
+                <Button
+                  colorPalette="blue"
+                  marginBottom={1}
+                  onClick={() =>
+                    handleUpdateProduct(product._id, updatedProduct)
+                  }
+                >
+                  Update
+                </Button>
+                <Dialog.CloseTrigger asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </Dialog.CloseTrigger>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 };
