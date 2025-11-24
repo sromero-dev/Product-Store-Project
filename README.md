@@ -86,3 +86,9 @@ import resta, { suma } from "./utils";
 | `export default` | Solo uno             | `import cualquierNombre from './archivo'` | No, puedes renombrar |
 
 ---
+
+## para ejecutar desarrollo en local
+
+npm run dev en back y luego en front
+
+importante console.logs para debuggear

@@ -1,12 +1,12 @@
 import { BsFillRocketTakeoffFill } from "react-icons/bs";
 import { Container, VStack, Text, SimpleGrid } from "@chakra-ui/react";
-import { Link } from "react-router-dom/Link";
+import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import { useProducts } from "../store/product";
+import { useProductStore } from "../store/product";
 import ProductCard from "../components/ProductCard";
 
 const HomePage = () => {
-  const { fetchProducts, products } = useProducts();
+  const { fetchProducts, products } = useProductStore();
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -40,24 +40,26 @@ const HomePage = () => {
           ))}
         </SimpleGrid>
 
-        <Text
-          fontSize={"xl"}
-          textAlign={"center"}
-          fontWeight={"bold"}
-          color={"gray.500"}
-        >
-          No products found...{" "}
-          <Link to={"/create"}>
-            <Text
-              as="span"
-              color={"blue.500"}
-              cursor={"pointer"}
-              _hover={{ textDecoration: "underline" }}
-            >
-              Create a product
-            </Text>
-          </Link>
-        </Text>
+        {products.length === 0 && (
+          <Text
+            fontSize={"xl"}
+            textAlign={"center"}
+            fontWeight={"bold"}
+            color={"gray.500"}
+          >
+            No products found...{" "}
+            <Link to={"/create"}>
+              <Text
+                as="span"
+                color={"blue.500"}
+                cursor={"pointer"}
+                _hover={{ textDecoration: "underline" }}
+              >
+                Create a product
+              </Text>
+            </Link>
+          </Text>
+        )}
       </VStack>
     </Container>
   );
