@@ -27,7 +27,7 @@ const HomePage = () => {
             display: "inline-block",
           }}
         >
-          Current Products{" "}
+          Current Products
           <BsFillRocketTakeoffFill
             style={{ display: "inline", color: "initial" }}
           />

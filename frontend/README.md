@@ -2,16 +2,20 @@
 
 ## 📋 Descripción General
 
-El frontend de **Product Store** es una aplicación React moderna que proporciona una interfaz de usuario intuitiva para gestionar productos. Utiliza **Chakra UI** para el diseño, **React Router** para la navegación y **Zustand** para el manejo del estado global.
+El frontend de **Product Store** es una aplicación React moderna que proporciona una interfaz de usuario completa para gestionar productos. Implementa operaciones CRUD completas (Crear, Leer, Actualizar, Eliminar) con una interfaz intuitiva y responsive.
 
 ## 🏗️ Arquitectura del Frontend
 
 ```
 src/
 ├── components/
-│   └── Navbar.jsx           # Barra de navegación global
+│   ├── Navbar.jsx           # Barra de navegación global
+│   ├── ProductCard.jsx      # Tarjeta de producto con CRUD
+│   └── ui/
+│       ├── color-mode.jsx   # Gestión del tema claro/oscuro
+│       └── toaster.jsx      # Sistema de notificaciones
 ├── pages/
-│   ├── HomePage.jsx         # Página principal (en desarrollo)
+│   ├── HomePage.jsx         # Página principal con grid de productos
 │   └── CreatePage.jsx       # Formulario de creación de productos
 ├── store/
 │   └── product.js           # Gestión del estado global (Zustand)
@@ -25,7 +29,7 @@ src/
 
 - **React 18**: Biblioteca para interfaces de usuario
 - **React Router DOM**: Enrutamiento cliente-side
-- **Chakra UI**: Sistema de diseño y componentes
+- **Chakra UI v3**: Sistema de diseño y componentes
 - **Zustand**: Gestión de estado global minimalista
 - **React Icons**: Biblioteca de iconos
 
@@ -37,14 +41,17 @@ src/
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
+import { ColorModeProvider } from "./components/ui/color-mode";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <ChakraProvider>
-        <App />
+      <ChakraProvider value={defaultSystem}>
+        <ColorModeProvider>
+          <App />
+        </ColorModeProvider>
       </ChakraProvider>
     </BrowserRouter>
   </StrictMode>
@@ -56,7 +63,8 @@ createRoot(document.getElementById("root")).render(
 - **`StrictMode`**: Herramienta de desarrollo de React para detectar problemas
 - **`createRoot`**: API moderna de React 18 para renderizado concurrente
 - **`BrowserRouter`**: Habilita el enrutamiento basado en URLs
-- **`ChakraProvider`**: Provee el tema y contexto de Chakra UI a toda la app
+- **`ChakraProvider`**: Provee el sistema de diseño de Chakra UI v3
+- **`ColorModeProvider`**: Contexto personalizado para gestión de tema claro/oscuro
 
 ### **2. App.jsx - Componente Raíz**
 
@@ -64,12 +72,13 @@ createRoot(document.getElementById("root")).render(
 function App() {
   return (
     <>
-      <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+      <Box minH="100vh" bg="gray.100" _dark={{ bg: "gray.900" }}>
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/create" element={<CreatePage />} />
         </Routes>
+        <Toaster />
       </Box>
     </>
   );
@@ -78,48 +87,32 @@ function App() {
 
 **🔍 Explicación:**
 
-- **`useColorModeValue`**: Hook de Chakra UI para temas claro/oscuro
-- **`Routes` y `Route`**: Sistema de enrutamiento declarativo
-- **Contenedor responsivo** que ocupa toda la altura viewport
+- **Layout Responsive**: Contenedor que ocupa toda la altura viewport
+- **Tema Adaptable**: Fondos diferentes para modo claro/oscuro
+- **Sistema de Rutas**: Navegación entre páginas
+- **Toaster Global**: Sistema de notificaciones accesible en toda la app
 
-### **3. Navbar.jsx - Barra de Navegación**
+### **3. HomePage.jsx - Página Principal**
 
 ```javascript
-const Navbar = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <Container maxW={"1140px"} px={4}>
-      <Flex
-        h={16}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        flexDir={{
-          base: "column",
-          sm: "row",
-        }}
-      >
-        {/* Logo/Título */}
-        <Text
-          fontSize={{ base: "22", sm: "28" }}
-          fontWeight={"bold"}
-          bgGradient={"linear(to-r, cyan.400, blue.500)"}
-          bgClip={"text"}
-        >
-          <Link to={"/"}>Product Store</Link>
-        </Text>
+const HomePage = () => {
+  const { fetchProducts, products } = useProductStore();
 
-        {/* Botones de acción */}
-        <HStack spacing={2}>
-          <Link to={"/create"}>
-            <Button>
-              <PlusSquareIcon fontSize={20} />
-            </Button>
-          </Link>
-          <Button onClick={toggleColorMode}>
-            {colorMode === "light" ? <IoMoon /> : <LuSun size={20} />}
-          </Button>
-        </HStack>
-      </Flex>
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  return (
+    <Container maxW="container.xl" py={12}>
+      <VStack gap={8}>
+        {/* Título con gradiente */}
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={10} w="full">
+          {products.map((product) => (
+            <ProductCard product={product} key={product._id} />
+          ))}
+        </SimpleGrid>
+        {/* Mensaje cuando no hay productos */}
+      </VStack>
     </Container>
   );
 };
@@ -127,10 +120,10 @@ const Navbar = () => {
 
 **🔍 Características:**
 
-- **Diseño responsivo**: Cambia de columna a fila en pantallas pequeñas
-- **Modo claro/oscuro**: Toggle con iconos dinámicos
-- **Gradiente animado**: Efecto visual en el título
-- **Navegación SPA**: Sin recargas de página
+- **Carga Automática**: Usa `useEffect` para cargar productos al montar
+- **Grid Responsive**: 1 columna en móvil, 2 en tablet, 3 en desktop
+- **Estado Condicional**: Muestra mensaje cuando no hay productos
+- **Título Animado**: Texto con gradiente y icono
 
 ### **4. CreatePage.jsx - Formulario de Creación**
 
@@ -142,271 +135,257 @@ const CreatePage = () => {
     image: "",
   });
 
-  const toast = useToast();
-  const { createProduct } = useProductStore();
-
   const handleAddProduct = async () => {
     const { success, message } = await createProduct(newProduct);
-
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: message,
-        status: "success",
-        isClosable: true,
-      });
-      // Reset del formulario
-      setNewProduct({ name: "", price: "", image: "" });
-    }
+    // Feedback y reset del formulario
   };
-
-  return (
-    <Container maxW={"container.sm"}>
-      <VStack w={"full"}>
-        <Heading as={"h1"} size={"2xl"}>
-          Create New Product
-        </Heading>
-        <Box
-          bg={useColorModeValue("white", "gray.800")}
-          p={6}
-          rounded={"lg"}
-          shadow={"md"}
-        >
-          <VStack spacing={4}>
-            <Input
-              placeholder="Product Name"
-              value={newProduct.name}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, name: e.target.value })
-              }
-            />
-            {/* Más inputs... */}
-            <Button onClick={handleAddProduct} w="full">
-              Add Product
-            </Button>
-          </VStack>
-        </Box>
-      </VStack>
-    </Container>
-  );
 };
 ```
 
-## 🏪 Store de Estado Global (Zustand)
+**🔍 Características:**
 
-### **product.js - Gestión del Estado**
+- **Estado Local**: Maneja datos del formulario antes de enviar
+- **Validación Backend**: La validación principal se hace en el store
+- **UX Mejorada**: Feedback inmediato y reset en éxito
+- **Diseño Centrado**: Formulario centrado verticalmente
+
+### **5. ProductCard.jsx - Tarjeta de Producto con CRUD**
+
+**Funcionalidades Principales:**
+
+- **Visualización**: Imagen, nombre, precio formateado
+- **Edición**: Modal con formulario de actualización
+- **Validación Avanzada**: Validación robusta de precios
+- **Eliminación**: Confirmación implícita con feedback
+
+**Validación de Precios:**
 
 ```javascript
-import { create } from "zustand";
+// Soporta múltiples formatos numéricos
+- "1299.99" ✅
+- "1299,99" ✅
+- "12.999,99" ❌ (múltiples separadores)
+```
 
+### **6. Navbar.jsx - Barra de Navegación**
+
+**Características:**
+
+- **Responsive**: Layout columnar en móviles, horizontal en desktop
+- **Tema Interactivo**: Toggle entre modo claro/oscuro
+- **Navegación SPA**: Enlaces sin recarga de página
+- **Branding con Gradiente**: Efecto visual moderno
+
+## 🏪 Store de Estado Global (Zustand)
+
+### **product.js - Gestión Completa del Estado**
+
+```javascript
 export const useProductStore = create((set) => ({
   products: [],
-  setProducts: (products) => set({ products }),
 
-  createProduct: async (newProducts) => {
-    // Validación síncrona
-    if (!newProducts.name || !newProducts.price || !newProducts.image) {
-      return { success: false, message: "Please fill in all fields." };
-    }
-
-    // Petición asíncrona a la API
-    const res = await fetch("/api/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProducts),
-    });
-
-    const data = await res.json();
-
-    // Actualización del estado global
-    set((state) => ({
-      products: [...state.products, data.data],
-    }));
-
-    return { success: true, message: "Product created successfully." };
+  // CRUD Completo
+  createProduct: async (newProduct) => {
+    /* ... */
   },
+  fetchProducts: async () => {
+    /* ... */
+  },
+  deleteProduct: async (pid) => {
+    /* ... */
+  },
+  updateProduct: async (pid, updatedProduct) => {
+    /* ... */
+  },
+
+  // Sincronización de estado
+  setProducts: (products) => set({ products }),
 }));
 ```
 
-## 🎨 Sistema de Diseño (Chakra UI)
+**🔍 Ventajas de Zustand:**
+
+- **✅ No necesita Provider** como Redux
+- **✅ Menos boilerplate code**
+- **✅ Integración directa** con React
+- **✅ DevTools** integradas
+
+## 🎨 Sistema de Diseño (Chakra UI v3)
 
 ### **Principios de Diseño:**
 
-1. **Responsive Design**:
+1. **Responsive Design** (Mobile-first):
 
 ```javascript
-// Diseño mobile-first
+columns={{ base: 1, sm: 2, md: 3 }}
+fontSize={{ base: "22px", sm: "28px" }}
 flexDir={{ base: "column", sm: "row" }}
-fontSize={{ base: "22", sm: "28" }}
 ```
 
-2. **Color Mode**:
+2. **Color Mode Adaptable**:
 
 ```javascript
-// Tema adaptable
-bg={useColorModeValue("gray.100", "gray.900")}
-bg={useColorModeValue("white", "gray.800")}
+bg="white" _dark={{ bg: "gray.800" }}
+color={{ base: "gray.600", _dark: "gray.200" }}
 ```
 
-3. **Espaciado Consistente**:
+3. **Sistema de Espaciado Consistente**:
 
 ```javascript
-// Sistema de spacing de Chakra
 p={6}        // padding: 1.5rem
-spacing={4}  // gap: 1rem
+gap={4}      // gap: 1rem
+py={12}      // padding vertical: 3rem
 ```
 
-## 🔄 Flujo de Datos
+## 🔄 Flujo de Datos Completo
 
-### **Creación de Producto:**
+### **Ciclo CRUD Completo:**
 
-1. **Usuario** llena formulario en `CreatePage`
-2. **Estado Local** (`useState`) captura los cambios
-3. **Botón "Add Product"** → ejecuta `handleAddProduct`
-4. **Store (Zustand)** → `createProduct` hace fetch a la API
-5. **Backend** → procesa y guarda en MongoDB
-6. **Store** → actualiza estado global con nuevo producto
-7. **UI** → muestra toast y limpia formulario
+1. **CREATE**
 
-### **Navegación:**
+   ```
+   CreatePage → useProductStore.createProduct() → API → Actualiza estado → HomePage se rerenderiza
+   ```
 
-```
-/ → HomePage (en desarrollo)
-/create → CreatePage (formulario)
+2. **READ**
+
+   ```
+   HomePage (useEffect) → useProductStore.fetchProducts() → API → Rellena estado → Render ProductCards
+   ```
+
+3. **UPDATE**
+
+   ```
+   ProductCard (Modal) → useProductStore.updateProduct() → API → Actualiza estado específico → Rerender
+   ```
+
+4. **DELETE**
+   ```
+   ProductCard (Button) → useProductStore.deleteProduct() → API → Filtra estado → Rerender
+   ```
+
+### **Comunicación API:**
+
+```javascript
+// Estructura consistente de requests
+const res = await fetch("/api/products", {
+  method: "POST", // o GET, PUT, DELETE
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(productData)
+});
+
+// Respuesta estandarizada
+{
+  success: true,
+  data: product,    // En éxito
+  message: "..."    // En error
+}
 ```
 
 ## 🎯 Características Técnicas Avanzadas
 
-### **1. Gestión de Estado con Zustand**
+### **1. Gestión de Estado Optimizada**
 
 ```javascript
-// Patrón simple y efectivo
-const { createProduct, products } = useProductStore();
+// Actualizaciones inmutables eficientes
+set((state) => ({
+  products: state.products.filter((product) => product._id !== pid),
+}));
 
-// ✅ No necesita Provider como Redux
-// ✅ Menos boilerplate code
-// ✅ Integración directa con React
+// Actualizaciones de elementos específicos
+set((state) => ({
+  products: state.products.map((product) =>
+    product._id === pid ? { ...product, ...data.data } : product
+  ),
+}));
 ```
 
-### **2. Validación en Capas**
+### **2. Validación en Múltiples Capas**
+
+**Frontend (UX Inmediata):**
 
 ```javascript
-// Frontend (validación inmediata)
-if (!newProducts.name || !newProducts.price || !newProducts.image) {
-  return { success: false, message: "Please fill in all fields." };
+// Validación de precio en ProductCard
+if (!/^\d+(\.\d+)?$/.test(price)) {
+  toaster.create({ type: "error", description: "Formato inválido" });
+  return;
 }
+```
 
-// Backend (validación de seguridad)
+**Backend (Seguridad):**
+
+```javascript
+// Validación en el endpoint API
 if (!product.name || !product.price || !product.image) {
   return res.status(400).json({
     success: false,
-    message: "All fields are required.",
+    message: "Todos los campos son requeridos",
   });
 }
 ```
 
-### **3. Manejo de Errores con Feedback**
+### **3. Sistema de Notificaciones**
 
 ```javascript
-// Sistema de notificaciones
-toast({
-  title: "Error",
-  description: message, // Mensaje específico del error
-  status: "error",
-  isClosable: true,
+// Toaster consistente en toda la aplicación
+toaster.create({
+  title: success ? "Success" : "Error",
+  description: message,
+  type: success ? "success" : "error",
+  duration: 3000,
 });
 ```
 
 ## 🚀 Patrones React Utilizados
 
-### **1. Estado Local vs Global**
+### **1. Separación de Responsabilidades**
+
+- **Components**: UI reutilizable (ProductCard, Navbar)
+- **Pages**: Vistas completas (HomePage, CreatePage)
+- **Store**: Lógica de estado y side effects
+- **UI Utilities**: Funcionalidades transversales (toaster, color-mode)
+
+### **2. Estado Local vs Global**
 
 ```javascript
-// Estado LOCAL (solo este componente)
+// Estado LOCAL (formulario temporal)
 const [newProduct, setNewProduct] = useState({
   name: "",
   price: "",
   image: "",
 });
 
-// Estado GLOBAL (compartido entre componentes)
-const { createProduct, products } = useProductStore();
+// Estado GLOBAL (datos compartidos)
+const { products, createProduct } = useProductStore();
 ```
 
-### **2. Composición de Componentes**
+### **3. Composición de Componentes**
 
 ```javascript
-// Patrón de contenedor + componentes puros
-<Container>
-  <VStack>
-    <Heading>...</Heading>
-    <Box>
-      <VStack>
-        <Input>...</Input>
-        <Button>...</Button>
-      </VStack>
-    </Box>
-  </VStack>
-</Container>
+// ProductCard compone múltiples componentes de Chakra UI
+<Box shadow="lg" rounded="lg">
+  <Image src={product.image} />
+  <Box p={4}>
+    <Heading>{product.name}</Heading>
+    <Text>
+      <FormatNumber value={product.price} currency="EUR" />
+    </Text>
+    <HStack>
+      <IconButton onClick={edit}><FaEdit /></IconButton>
+      <IconButton onClick={delete}><FaTrash /></IconButton>
+    </HStack>
+  </Box>
+</Box>
 ```
-
-### **3. Separación de Responsabilidades**
-
-- **Components**: UI pura (Navbar)
-- **Pages**: Vistas completas (CreatePage)
-- **Store**: Lógica de estado (product.js)
-- **Routes**: Configuración de navegación (App.jsx)
-
-## 🔮 Próximos Pasos (Según Código Actual)
-
-### **HomePage.jsx** - En Desarrollo
-
-```javascript
-// Actualmente vacío - probablemente mostrará:
-// - Lista de productos
-// - Búsqueda y filtros
-// - Cards de productos con opciones de editar/eliminar
-```
-
-### **Mejoras Potenciales:**
-
-1. **Carga de productos** al iniciar la aplicación
-2. **Operaciones CRUD completas** (editar, eliminar)
-3. **Búsqueda y filtrado** en tiempo real
-4. **Paginación** para muchos productos
-5. **Imágenes locales** además de URLs
 
 ## 🌐 Integración Frontend-Backend
-
-### **Comunicación API:**
-
-```javascript
-// Frontend → Backend
-fetch("/api/products", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(newProducts),
-});
-
-// Backend responde con:
-{ success: true, data: newProduct } // ✅ Éxito
-{ success: false, message: "Error message" } // ❌ Falla
-```
 
 ### **Estructura de Datos Consistente:**
 
 ```javascript
 // Producto en Frontend
 {
+  _id: "507f1f77bcf86cd799439011",  // MongoDB ID
   name: "Laptop Gaming",
   price: "1299.99",
   image: "https://example.com/laptop.jpg"
@@ -414,29 +393,60 @@ fetch("/api/products", {
 
 // Producto en Backend (Mongoose)
 {
+  _id: ObjectId("507f1f77bcf86cd799439011"),
   name: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
-  timestamps: true // createdAt, updatedAt automáticos
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
-Esta arquitectura frontend proporciona una base sólida, escalable y mantenible para la aplicación Product Store, con excelentes prácticas de desarrollo React moderno.
+### **Manejo de Errores Unificado:**
 
-## Rules - `eslint.config.js`
+```javascript
+// Todas las responses siguen el mismo formato
+{
+  success: boolean,
+  data?: any,
+  message?: string
+}
 
-#TODO - Explicar
+// Frontend maneja consistentemente
+const { success, message } = await createProduct(newProduct);
+if (!success) {
+  // Mostrar error al usuario
+  return;
+}
+// Proceder con éxito
+```
 
-## Resumen del stack empleado
+## 🔮 Próximas Mejoras Potenciales
 
-**⚡ Desarrollo rápido** - Vite
+### **Funcionalidades Adicionales:**
 
-**🎨 UI consistente y accesible** - Chakra UI v2 (→ v3)
+- **Búsqueda y Filtrado** en tiempo real
+- **Paginación** para grandes volúmenes de productos
+- **Subida de Imágenes** locales además de URLs
+- **Categorías y Etiquetas** para organización
+- **Modo Vista/Edición** en línea (sin modal)
 
-**🧭 Navegación cliente** - React Router DOM
+### **Optimizaciones Técnicas:**
 
-**🏪 Estado global simple** - Zustand
+- **Virtualización** de listas para muchos productos
+- **Caché Avanzada** con react-query o SWR
+- **Lazy Loading** de imágenes y componentes
+- **Testing** con Jest y React Testing Library
 
-**🎯 Iconografía** - React Icons + Chakra Icons
+## 📊 Resumen del Stack
 
-**⚛️ Base fundamental** - React 18 + JavaScript ES6+
+**⚡ Desarrollo Rápido** - Vite  
+**🎨 UI Consistente y Accesible** - Chakra UI v3
+**🧭 Navegación Cliente** - React Router DOM  
+**🏪 Estado Global Simple** - Zustand  
+**🎯 Iconografía** - React Icons  
+**🔔 Notificaciones** - Sistema Toaster personalizado  
+**🌓 Tema Adaptable** - Context personalizado + localStorage  
+**⚛️ Base Fundamental** - React 18 + JavaScript ES6+
+
+Esta arquitectura frontend proporciona una base sólida, escalable y mantenible para la aplicación Product Store, con excelentes prácticas de desarrollo React moderno y experiencia de usuario.

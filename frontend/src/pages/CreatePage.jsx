@@ -6,7 +6,7 @@ import {
   Input,
   Button,
 } from "@chakra-ui/react";
-import { toaster } from "../components/ui/toaster-config";
+import { toaster } from "../components/ui/toaster";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
 

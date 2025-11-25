@@ -1,6 +1,8 @@
 # Product Store - Guía Técnica
 
-Explicar relación API RESTful con front-end
+## Para el deployment
+
+https://dashboard.render.com/web
 
 ## Diferencias entre export const y export default
 

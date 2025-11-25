@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-// Creamos el contexto pero NO lo exportamos para evitar el error de Fast Refresh
 const ColorModeContext = createContext();
 
 export function ColorModeProvider({ children }) {

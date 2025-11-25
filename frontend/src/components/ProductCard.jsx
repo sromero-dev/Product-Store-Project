@@ -6,15 +6,20 @@ import {
   IconButton,
   Image,
   Input,
+  InputGroup,
   Text,
   VStack,
   Dialog,
   Portal,
+  FormatNumber,
+  Field,
+  defineStyle,
+  useControllableState,
 } from "@chakra-ui/react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
-import { toaster } from "./ui/toaster-config";
+import { toaster } from "../components/ui/toaster";
 
 const ProductCard = ({ product }) => {
   const [updatedProduct, setUpdatedProduct] = useState(product);
@@ -32,6 +37,51 @@ const ProductCard = ({ product }) => {
   };
 
   const handleUpdateProduct = async (pid, updatedProduct) => {
+    const price = updatedProduct.price;
+
+    if (!price || price.trim() === "" || price < 0) return;
+
+    if (!/^\d+(\.\d+)?$/.test(price)) {
+      toaster.create({
+        title: "Error",
+        description:
+          "Price must contain only numbers, optionally with one decimal point",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    if ((price.match(/\./g) || []).length > 1) {
+      toaster.create({
+        title: "Error",
+        description: "Price can only contain one decimal point",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    if (price.includes(",") && price.includes(".")) {
+      toaster.create({
+        title: "Error",
+        description: "Price cannot contain both comma and dot as separators",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    const numericPrice = parseFloat(price.replace(",", "."));
+    if (isNaN(numericPrice)) {
+      toaster.create({
+        title: "Error",
+        description: "Price must be a valid number",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    const roundedPrice = numericPrice.toFixed(2);
+    updatedProduct.price = roundedPrice.toString();
+
     const { success, message } = await updateProduct(pid, updatedProduct);
     setOpen(false);
     toaster.create({
@@ -70,7 +120,7 @@ const ProductCard = ({ product }) => {
           color={{ base: "gray.600", _dark: "gray.200" }}
           mb={4}
         >
-          {product.price}€
+          <FormatNumber value={product.price} style="currency" currency="EUR" />
         </Text>
 
         <HStack gap={2}>
@@ -79,7 +129,7 @@ const ProductCard = ({ product }) => {
             onClick={() => setOpen(true)}
             colorPalette="blue"
           >
-            <FaEdit iconSize={20} />
+            <FaEdit />
           </IconButton>
           <IconButton
             onClick={() => handleDeleteProduct(product._id)}
@@ -104,10 +154,9 @@ const ProductCard = ({ product }) => {
                 <Dialog.Title>Update Product</Dialog.Title>
               </Dialog.Header>
               <Dialog.Body>
-                <VStack gap={4}>
-                  <Input
-                    placeholder="Product Name"
-                    name="name"
+                <VStack gap={5} pt={2}>
+                  <FloatingLabelInput
+                    label="Product Name"
                     value={updatedProduct.name}
                     onChange={(e) =>
                       setUpdatedProduct({
@@ -116,29 +165,33 @@ const ProductCard = ({ product }) => {
                       })
                     }
                   />
-                  <Input
-                    placeholder="Price"
-                    name="price"
-                    type="number"
-                    value={updatedProduct.price}
-                    onChange={(e) =>
-                      setUpdatedProduct({
-                        ...updatedProduct,
-                        price: e.target.value,
-                      })
-                    }
-                  />
-                  <Input
-                    placeholder="Image URL"
-                    name="image"
-                    value={updatedProduct.image}
-                    onChange={(e) =>
-                      setUpdatedProduct({
-                        ...updatedProduct,
-                        image: e.target.value,
-                      })
-                    }
-                  />
+                  <InputGroup startElement="€" endElement="EUR">
+                    <Input
+                      placeholder="Price"
+                      name="price"
+                      type="string"
+                      value={updatedProduct.price}
+                      onChange={(e) =>
+                        setUpdatedProduct({
+                          ...updatedProduct,
+                          price: e.target.value,
+                        })
+                      }
+                    />
+                  </InputGroup>
+                  <InputGroup startElement="https://">
+                    <Input
+                      placeholder="Image URL"
+                      name="image"
+                      value={updatedProduct.image}
+                      onChange={(e) =>
+                        setUpdatedProduct({
+                          ...updatedProduct,
+                          image: e.target.value,
+                        })
+                      }
+                    />
+                  </InputGroup>
                 </VStack>
               </Dialog.Body>
 
@@ -150,7 +203,7 @@ const ProductCard = ({ product }) => {
                     handleUpdateProduct(product._id, updatedProduct)
                   }
                 >
-                  Update
+                  Save
                 </Button>
                 <Dialog.CloseTrigger asChild>
                   <Button variant="ghost">Cancel</Button>
@@ -165,3 +218,68 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
+
+const FloatingLabelInput = (props) => {
+  const { label, onValueChange, value, defaultValue = "", ...rest } = props;
+
+  const [inputState, setInputState] = useControllableState({
+    defaultValue,
+    onChange: onValueChange,
+    value,
+  });
+
+  const [focused, setFocused] = useState(false);
+  const shouldFloat = inputState?.length > 0 || focused || value?.length > 0;
+
+  return (
+    <Box pos="relative" w="full">
+      <Input
+        {...rest}
+        placeholder=" "
+        onFocus={(e) => {
+          props.onFocus?.(e);
+          setFocused(true);
+        }}
+        onBlur={(e) => {
+          props.onBlur?.(e);
+          setFocused(false);
+        }}
+        onChange={(e) => {
+          props.onChange?.(e);
+          setInputState(e.target.value);
+        }}
+        value={inputState}
+        data-float={shouldFloat || undefined}
+        pt="4"
+        pb="1"
+        h="12"
+      />
+      <Field.Label css={floatingStyles} data-float={shouldFloat || undefined}>
+        {label}
+      </Field.Label>
+    </Box>
+  );
+};
+
+const floatingStyles = defineStyle({
+  pos: "absolute",
+  bg: "bg",
+  px: "0.5",
+  top: "3",
+  insetStart: "3",
+  fontWeight: "normal",
+  pointerEvents: "none",
+  transition: "all 0.2s ease-out",
+  color: "fg.muted",
+  _dark: {
+    bg: "gray.800",
+  },
+  "&[data-float]": {
+    top: "-2.5",
+    insetStart: "2",
+    color: "blue.500",
+    fontSize: "sm",
+    fontWeight: "medium",
+    zIndex: 2,
+  },
+});
