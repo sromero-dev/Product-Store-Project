@@ -7,8 +7,7 @@ import {
   Button,
   Image,
   Text,
-  Tabs,
-  Group,
+  Link,
 } from "@chakra-ui/react";
 import { toaster } from "../components/ui/toaster";
 import { useState } from "react";
@@ -156,8 +155,37 @@ const CreatePage = () => {
             )}
 
             <Text fontSize="xs" color="gray.500" w="full">
-              💡 Tip: Search for image URLs on unsplash.com, pexels.com, or
-              pixabay.com and paste the direct image link here.
+              💡 Tip: Search for image URLs on{" "}
+              <Link
+                href="https://unsplash.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="blue.500"
+                _hover={{ textDecoration: "underline" }}
+              >
+                Unsplash
+              </Link>
+              ,{" "}
+              <Link
+                href="https://pexels.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="blue.500"
+                _hover={{ textDecoration: "underline" }}
+              >
+                Pexels
+              </Link>
+              , or{" "}
+              <Link
+                href="https://pixabay.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="blue.500"
+                _hover={{ textDecoration: "underline" }}
+              >
+                Pixabay
+              </Link>{" "}
+              and paste the direct image link here.
             </Text>
 
             <Button
