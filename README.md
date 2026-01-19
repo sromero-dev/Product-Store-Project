@@ -155,7 +155,7 @@ product-store/
 | **UPDATE** | PUT    | `/api/products/:id` | ✅ IP Requerida | Editar producto         |
 | **DELETE** | DELETE | `/api/products/:id` | ✅ IP Requerida | Eliminar producto       |
 
-> ✅ Solo tu IP (`91.117.234.145`) puede crear, editar o eliminar productos
+> ✅ Solo las IPs configuradas en `.env` (variable `ALLOWED_IPS`) pueden crear, editar o eliminar productos
 
 ---
 
@@ -177,7 +177,7 @@ Solo tú (desde tu IP) puedes modificar el catálogo. Los visitantes pueden ver 
 Edita `.env`:
 
 ```env
-ALLOWED_IPS=91.117.234.145,192.168.1.1,127.0.0.1
+ALLOWED_IPS=192.168.1.100,127.0.0.1,::1
 ```
 
 ---
