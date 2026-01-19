@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 3000;
 
 const __dirname = path.resolve();
 
+// Trust proxy - important for getting real client IP from proxies
+app.set("trust proxy", true);
+
 app.use(express.json()); // Allows JSON data
 
 app.use("/api/products", productRouter); // Product routes (redirect to products.route.js)
