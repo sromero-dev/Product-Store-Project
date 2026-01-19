@@ -26,7 +26,9 @@ const ProductCard = ({ product }) => {
   const [updatedProduct, setUpdatedProduct] = useState(product);
   const [open, setOpen] = useState(false);
   const [showDeletePasswordModal, setShowDeletePasswordModal] = useState(false);
+  const [showUpdatePasswordModal, setShowUpdatePasswordModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { deleteProduct, updateProduct } = useProductStore();
 
   const handleDeleteProduct = async (pid, adminPassword) => {
@@ -44,6 +46,10 @@ const ProductCard = ({ product }) => {
 
   const handleDeleteClick = () => {
     setShowDeletePasswordModal(true);
+  };
+
+  const handleUpdateClick = () => {
+    setShowUpdatePasswordModal(true);
   };
 
   const handleUpdateProduct = async (pid, updatedProduct, adminPassword) => {
@@ -98,6 +104,8 @@ const ProductCard = ({ product }) => {
       adminPassword,
     );
     setOpen(false);
+    setIsUpdating(false);
+    setShowUpdatePasswordModal(false);
     toaster.create({
       title: success ? "Success" : "Error",
       description: message,
@@ -213,9 +221,7 @@ const ProductCard = ({ product }) => {
                 <Button
                   colorPalette="blue"
                   marginBottom={1}
-                  onClick={() =>
-                    handleUpdateProduct(product._id, updatedProduct)
-                  }
+                  onClick={handleUpdateClick}
                 >
                   Save
                 </Button>
@@ -233,6 +239,13 @@ const ProductCard = ({ product }) => {
         onClose={() => setShowDeletePasswordModal(false)}
         onConfirm={(password) => handleDeleteProduct(product._id, password)}
         isLoading={isDeleting}
+      />
+
+      <AdminPasswordModal
+        isOpen={showUpdatePasswordModal}
+        onClose={() => setShowUpdatePasswordModal(false)}
+        onConfirm={(password) => handleUpdateProduct(product._id, updatedProduct, password)}
+        isLoading={isUpdating}
       />
     </Box>
   );

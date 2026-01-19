@@ -7,14 +7,14 @@ Una aplicación **full-stack moderna** para gestión de productos con operacione
 **Product Store** es una plataforma de gestión de productos que permite:
 
 - ✅ Ver todos los productos disponibles
-- ✅ Crear nuevos productos (solo desde tu IP autorizada)
-- ✅ Editar información de productos (solo desde tu IP autorizada)
-- ✅ Eliminar productos (solo desde tu IP autorizada)
+- ✅ Crear nuevos productos (requiere contraseña de administrador)
+- ✅ Editar información de productos (requiere contraseña de administrador)
+- ✅ Eliminar productos (requiere contraseña de administrador)
 
 **Características principales:**
 
 - 🎨 Interfaz moderna con Chakra UI
-- 🔐 Restricción por IP para operaciones sensibles
+- 🔐 Autenticación por contraseña para operaciones sensibles
 - 📱 Diseño responsive (móvil, tablet, desktop)
 - 🌓 Modo claro/oscuro
 - ⚡ Gestión de estado eficiente con Zustand
@@ -69,11 +69,11 @@ cp .env.example .env
 # Editar .env y agregar:
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb+srv://tu_usuario:tu_password@cluster.mongodb.net/products
-ALLOWED_IPS=127.0.0.1,::1
+MONGODB_URI=mongodb+srv://tu_usuario:tu_password@cluster.mongodb.net/products
+ADMIN_PASSWORD=your-secure-password-here
 ```
 
-> **¿Cómo obtener MONGO_URI?**
+> **¿Cómo obtener MONGODB_URI?**
 >
 > 1. Ve a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 > 2. Crea un cluster gratis
@@ -148,37 +148,39 @@ product-store/
 
 ## 🔄 Operaciones CRUD Disponibles
 
-| Operación  | Método | Endpoint            | Autenticación   | Descripción             |
-| ---------- | ------ | ------------------- | --------------- | ----------------------- |
-| **READ**   | GET    | `/api/products`     | ❌ Pública      | Ver todos los productos |
-| **CREATE** | POST   | `/api/products`     | ✅ IP Requerida | Crear producto          |
-| **UPDATE** | PUT    | `/api/products/:id` | ✅ IP Requerida | Editar producto         |
-| **DELETE** | DELETE | `/api/products/:id` | ✅ IP Requerida | Eliminar producto       |
+| Operación  | Método | Endpoint            | Autenticación      | Descripción             |
+| ---------- | ------ | ------------------- | ------------------ | ----------------------- |
+| **READ**   | GET    | `/api/products`     | ❌ Pública         | Ver todos los productos |
+| **CREATE** | POST   | `/api/products`     | ✅ Contraseña      | Crear producto          |
+| **UPDATE** | PUT    | `/api/products/:id` | ✅ Contraseña      | Editar producto         |
+| **DELETE** | DELETE | `/api/products/:id` | ✅ Contraseña      | Eliminar producto       |
 
-> ✅ Solo las IPs configuradas en `.env` (variable `ALLOWED_IPS`) pueden crear, editar o eliminar productos
+> ✅ La contraseña se verifica en el servidor. Sin contraseña válida = Error 401 Unauthorized
 
 ---
 
-## 🔐 Restricción por IP
+## 🔐 Autenticación por Contraseña
 
 ### ¿Por qué?
 
-Solo tú (desde tu IP) puedes modificar el catálogo. Los visitantes pueden ver pero no cambiar.
+Para proteger el catálogo de modificaciones accidentales o no autorizadas, cualquier operación que cambie datos (crear, editar o eliminar productos) requiere una contraseña de administrador.
 
 ### ¿Cómo funciona?
 
-1. Cuando intentas crear/editar/eliminar un producto
-2. El servidor valida tu IP contra `ALLOWED_IPS` en `.env`
-3. Si está autorizada: ✅ Operación permitida
-4. Si no está autorizada: ❌ Error 403 Forbidden
+1. Cuando intentas crear, editar o eliminar un producto
+2. Se abre un modal pidiendo la contraseña de administrador
+3. Si es correcta: ✅ Operación permitida
+4. Si es incorrecta: ❌ Error de acceso denegado
 
-### Cambiar IPs autorizadas
+### Cambiar la contraseña de administrador
 
-Edita `.env`:
+Edita el archivo `.env` en el backend:
 
 ```env
-ALLOWED_IPS=192.168.1.100,127.0.0.1,::1
+ADMIN_PASSWORD=tu-nueva-contraseña-segura
 ```
+
+> **Nota:** La contraseña solo se verifica en el servidor, nunca se almacena en la base de datos.
 
 ---
 
@@ -214,8 +216,8 @@ npm start                # Ejecuta servidor de producción
 5. Agrega Environment Variables:
    ```
    NODE_ENV=production
-   MONGO_URI=<tu_connection_string>
-   ALLOWED_IPS=<tuIP>,127.0.0.1
+   MONGODB_URI=<tu_connection_string>
+   ADMIN_PASSWORD=<contraseña-segura>
    PORT=5000
    ```
 
@@ -285,14 +287,14 @@ Para detalles completos, ver [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## 📚 Archivos Importantes
 
-| Archivo                                        | Propósito                           |
-| ---------------------------------------------- | ----------------------------------- |
-| `.env`                                         | Variables de entorno (NO versionar) |
-| `.env.example`                                 | Template de `.env` (SÍ versionar)   |
-| `backend/server.js`                            | Servidor principal                  |
-| `frontend/src/App.jsx`                         | Componente raíz                     |
-| `backend/middleware/ipWhitelist.middleware.js` | Validación de IP                    |
-| `package.json`                                 | Scripts y dependencias              |
+| Archivo                                      | Propósito                           |
+| -------------------------------------------- | ----------------------------------- |
+| `.env`                                       | Variables de entorno (NO versionar) |
+| `.env.example`                               | Template de `.env` (SÍ versionar)   |
+| `backend/server.js`                          | Servidor principal                  |
+| `frontend/src/App.jsx`                       | Componente raíz                     |
+| `backend/middleware/adminAuth.middleware.js` | Validación de contraseña            |
+| `package.json`                               | Scripts y dependencias              |
 
 ---
 
@@ -304,6 +306,6 @@ Este proyecto demuestra:
 - ✅ **Comunicación Cliente-Servidor**: API REST
 - ✅ **Gestión de Estado**: Zustand en frontend
 - ✅ **Async/Await**: Operaciones asincrónicas
-- ✅ **Seguridad**: Restricción por IP
+- ✅ **Seguridad**: Autenticación por contraseña
 - ✅ **Variables de Entorno**: Configuración segura
 - ✅ **Deployment**: Desplegar en producción
