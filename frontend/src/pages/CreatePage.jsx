@@ -68,9 +68,11 @@ const CreatePage = () => {
               }
             />
             <Input
-              placeholder="Price"
+              placeholder="Price (e.g., 19.99)"
               name="price"
-              type="text"
+              type="number" // Cambiar a type="number"
+              step="0.01" // Permitir decimales
+              min="0" // No permitir negativos
               value={newProduct.price}
               onChange={(e) =>
                 setNewProduct({ ...newProduct, price: e.target.value })
