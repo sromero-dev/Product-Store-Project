@@ -148,12 +148,12 @@ product-store/
 
 ## 🔄 Operaciones CRUD Disponibles
 
-| Operación  | Método | Endpoint            | Autenticación      | Descripción             |
-| ---------- | ------ | ------------------- | ------------------ | ----------------------- |
-| **READ**   | GET    | `/api/products`     | ❌ Pública         | Ver todos los productos |
-| **CREATE** | POST   | `/api/products`     | ✅ Contraseña      | Crear producto          |
-| **UPDATE** | PUT    | `/api/products/:id` | ✅ Contraseña      | Editar producto         |
-| **DELETE** | DELETE | `/api/products/:id` | ✅ Contraseña      | Eliminar producto       |
+| Operación  | Método | Endpoint            | Autenticación | Descripción             |
+| ---------- | ------ | ------------------- | ------------- | ----------------------- |
+| **READ**   | GET    | `/api/products`     | ❌ Pública    | Ver todos los productos |
+| **CREATE** | POST   | `/api/products`     | ✅ Contraseña | Crear producto          |
+| **UPDATE** | PUT    | `/api/products/:id` | ✅ Contraseña | Editar producto         |
+| **DELETE** | DELETE | `/api/products/:id` | ✅ Contraseña | Eliminar producto       |
 
 > ✅ La contraseña se verifica en el servidor. Sin contraseña válida = Error 401 Unauthorized
 

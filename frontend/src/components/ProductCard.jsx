@@ -244,7 +244,9 @@ const ProductCard = ({ product }) => {
       <AdminPasswordModal
         isOpen={showUpdatePasswordModal}
         onClose={() => setShowUpdatePasswordModal(false)}
-        onConfirm={(password) => handleUpdateProduct(product._id, updatedProduct, password)}
+        onConfirm={(password) =>
+          handleUpdateProduct(product._id, updatedProduct, password)
+        }
         isLoading={isUpdating}
       />
     </Box>
