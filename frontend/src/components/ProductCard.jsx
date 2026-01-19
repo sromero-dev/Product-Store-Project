@@ -92,7 +92,11 @@ const ProductCard = ({ product }) => {
     const roundedPrice = numericPrice.toFixed(2);
     updatedProduct.price = roundedPrice.toString();
 
-    const { success, message } = await updateProduct(pid, updatedProduct, adminPassword);
+    const { success, message } = await updateProduct(
+      pid,
+      updatedProduct,
+      adminPassword,
+    );
     setOpen(false);
     toaster.create({
       title: success ? "Success" : "Error",
