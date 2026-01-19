@@ -1,6 +1,5 @@
 # Dependency directories and environment files
 .env
-package-lock.json
 
 # Logs
 logs
