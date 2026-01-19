@@ -1,172 +1,309 @@
-# Product Store - Guía Técnica Completa
+# 🛍️ Product Store
 
-## 📋 Descripción General
+Una aplicación **full-stack moderna** para gestión de productos con operaciones CRUD completas. Perfecta para aprender desarrollo web contemporáneo.
 
-**Product Store** es una aplicación full-stack moderna para gestión de productos que implementa operaciones CRUD completas. Consta de un frontend en React con Chakra UI y un backend en Node.js con Express y MongoDB.
+## 📋 ¿Qué es Product Store?
 
-## 🏗️ Arquitectura del Proyecto
+**Product Store** es una plataforma de gestión de productos que permite:
 
-### **Frontend (React + JavaScript)**
+- ✅ Ver todos los productos disponibles
+- ✅ Crear nuevos productos (solo desde tu IP autorizada)
+- ✅ Editar información de productos (solo desde tu IP autorizada)
+- ✅ Eliminar productos (solo desde tu IP autorizada)
 
-```
-src/
-├── components/          # Componentes reutilizables
-├── pages/              # Vistas de la aplicación
-├── store/              # Gestión de estado (Zustand)
-└── App.jsx             # Componente raíz
-```
+**Características principales:**
 
-### **Backend (Node.js + Express)**
-
-```
-backend/
-├── controllers/        # Lógica de negocio
-├── models/             # Modelos de datos MongoDB
-├── routes/             # Definición de endpoints API
-└── server.js           # Servidor principal
-```
-
-## 🚀 Inicio Rápido
-
-### **Desarrollo Local**
-
-```bash
-# Backend
-cd backend
-npm run dev
-
-# Frontend (en otra terminal)
-cd frontend
-npm run dev
-```
-
-### **Deployment**
-
-- **Plataforma recomendada**: [Render.com](https://dashboard.render.com/web)
-- **Variables de entorno**: Configurar `MONGO_URI` para la base de datos
-
-## 🛠️ Stack Tecnológico
-
-### **Frontend**
-
-- **React 18** + JavaScript ES6+
-- **Chakra UI v3** - Sistema de diseño
-- **Zustand** - Gestión de estado
-- **React Router DOM** - Navegación
-- **React Icons** - Iconografía
-
-### **Backend**
-
-- **Node.js** + **Express.js** - Servidor API
-- **MongoDB** + **Mongoose** - Base de datos
-- **dotenv** - Variables de entorno
-
-## 🔄 Operaciones CRUD Disponibles
-
-| Operación | Método HTTP | Endpoint            | Descripción                 |
-| --------- | ----------- | ------------------- | --------------------------- |
-| CREATE    | POST        | `/api/products`     | Crear nuevo producto        |
-| READ      | GET         | `/api/products`     | Obtener todos los productos |
-| UPDATE    | PUT         | `/api/products/:id` | Actualizar producto         |
-| DELETE    | DELETE      | `/api/products/:id` | Eliminar producto           |
-
-## 💡 Conceptos Técnicos Esenciales
-
-### **Gestión de Estado con Zustand**
-
-```javascript
-// Store global sin necesidad de Provider
-export const useProductStore = create((set) => ({
-  products: [],
-  createProduct: async (newProduct) => {
-    /* ... */
-  },
-  fetchProducts: async () => {
-    /* ... */
-  },
-}));
-```
-
-### **Async/Await vs Promesas**
-
-- **Async/Await**: Código más limpio y legible
-- **Evolución**: Callbacks → Promesas (.then/.catch) → Async/Await
-- **Ventajas**: Mejor manejo de errores, debugging más fácil
-
-### **Sistema de Exportación/Importación**
-
-| Tipo             | Cantidad  | Importación              | ¿Nombre obligatorio? |
-| ---------------- | --------- | ------------------------ | -------------------- |
-| `export const`   | Múltiples | `import { nombre }`      | Sí                   |
-| `export default` | Uno único | `import cualquierNombre` | No                   |
-
-**Ejemplo:**
-
-```javascript
-// Exportación
-export const suma = (a, b) => a + b;
-export default function resta(a, b) {
-  return a - b;
-}
-
-// Importación
-import resta, { suma } from "./utils";
-```
-
-## 🎨 Características de UI/UX
-
-- **Diseño Responsive**: Mobile-first con Chakra UI
-- **Tema Adaptable**: Modo claro/oscuro
-- **Validación en Tiempo Real**: Feedback inmediato al usuario
-- **Notificaciones**: Sistema toaster para acciones CRUD
-
-## 🔧 Flujo de Desarrollo
-
-### **Debugging**
-
-- Uso de `console.log` para seguimiento de operaciones
-- Estructura de respuestas consistente:
-
-```javascript
-{
-  success: boolean,
-  data?: any,
-  message?: string
-}
-```
-
-### **Estructura de Datos**
-
-```javascript
-// Producto
-{
-  _id: "507f1f77bcf86cd799439011",
-  name: "Laptop Gaming",
-  price: 1299.99,
-  image: "https://example.com/image.jpg",
-  createdAt: "2024-01-01T00:00:00.000Z",
-  updatedAt: "2024-01-01T00:00:00.000Z"
-}
-```
-
-## 🌟 Próximas Mejoras
-
-- Búsqueda y filtrado en tiempo real
-- Paginación para grandes volúmenes
-- Subida de imágenes locales
-- Sistema de categorías
-- Tests automatizados
-
-## 📚 Resumen Técnico
-
-Esta aplicación demuestra **patrones modernos de desarrollo full-stack**:
-
-- **Frontend**: Componentes reutilizables, estado global eficiente, UI consistente
-- **Backend**: API RESTful, operaciones asíncronas, arquitectura escalable
-- **Base de Datos**: Modelado con Mongoose, validaciones automáticas
-
-**🔗 Conexión Frontend-Backend**: Comunicación mediante API REST con formato JSON estandarizado y manejo unificado de errores.
+- 🎨 Interfaz moderna con Chakra UI
+- 🔐 Restricción por IP para operaciones sensibles
+- 📱 Diseño responsive (móvil, tablet, desktop)
+- 🌓 Modo claro/oscuro
+- ⚡ Gestión de estado eficiente con Zustand
+- 🚀 API RESTful con Node.js + Express
 
 ---
 
-_Para detalles específicos de implementación, consultar los README individuales de frontend y backend._
+## 🏗️ Stack Tecnológico
+
+### Frontend
+
+- **React 19** - Librería UI
+- **Chakra UI v3** - Sistema de diseño
+- **Zustand** - Gestión de estado global
+- **Vite** - Build tool ultra rápido
+- **React Router** - Navegación
+- **React Icons** - Iconografía
+
+### Backend
+
+- **Node.js** - Runtime JavaScript
+- **Express.js** - Framework web
+- **MongoDB** + **Mongoose** - Base de datos
+- **dotenv** - Variables de entorno
+
+---
+
+## 🚀 Lanzar en Local
+
+### Requisitos Previos
+
+- **Node.js** (v18+) - [Descargar](https://nodejs.org/)
+- **npm** (viene con Node.js)
+- **Git** - [Descargar](https://git-scm.com/)
+- **MongoDB URI** - [Crear cluster gratis en MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+
+### Pasos para Ejecutar Localmente
+
+#### 1️⃣ Clonar el repositorio
+
+```bash
+git clone https://github.com/sromero-dev/Product-Store-Project.git
+cd product-store
+```
+
+#### 2️⃣ Configurar variables de entorno
+
+```bash
+# Crear archivo .env en la raíz del proyecto
+cp .env.example .env
+
+# Editar .env y agregar:
+PORT=5000
+NODE_ENV=development
+MONGO_URI=mongodb+srv://tu_usuario:tu_password@cluster.mongodb.net/products
+ALLOWED_IPS=127.0.0.1,::1
+```
+
+> **¿Cómo obtener MONGO_URI?**
+>
+> 1. Ve a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+> 2. Crea un cluster gratis
+> 3. Ve a "Connect" → "Drivers" → "Node.js"
+> 4. Copia la connection string y reemplaza `<password>` con tu contraseña
+
+#### 3️⃣ Instalar dependencias
+
+```bash
+# Instalar dependencias del backend
+npm install
+
+# Instalar dependencias del frontend
+npm install --prefix frontend
+```
+
+#### 4️⃣ Lanzar backend y frontend
+
+**Terminal 1 - Backend:**
+
+```bash
+npm run dev
+# El servidor estará en http://localhost:5000
+```
+
+**Terminal 2 - Frontend (nueva terminal):**
+
+```bash
+npm run dev --prefix frontend
+# La aplicación estará en http://localhost:5173
+```
+
+#### 5️⃣ ¡Listo! 🎉
+
+Abre tu navegador en `http://localhost:5173` y comienza a usar la aplicación.
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+product-store/
+├── backend/
+│   ├── config/
+│   │   └── db.js                 # Conexión a MongoDB
+│   ├── controllers/
+│   │   └── product.controller.js # Lógica de negocio
+│   ├── middleware/
+│   │   └── ipWhitelist.middleware.js # Validación de IP
+│   ├── models/
+│   │   └── product.model.js      # Schema de productos
+│   ├── routes/
+│   │   └── products.route.js     # Rutas de API
+│   └── server.js                 # Punto de entrada
+├── frontend/
+│   ├── src/
+│   │   ├── components/           # Componentes reutilizables
+│   │   ├── pages/                # Vistas de la app
+│   │   ├── store/                # Estado global (Zustand)
+│   │   ├── lib/                  # Utilidades
+│   │   ├── App.tsx               # Componente raíz
+│   │   └── main.jsx              # Punto de entrada
+│   ├── public/
+│   │   └── favicon.svg           # Logo en pestaña del navegador
+│   └── package.json
+├── .env.example                  # Template de variables de entorno
+├── package.json                  # Scripts del proyecto
+└── README.md                     # Este archivo
+```
+
+---
+
+## 🔄 Operaciones CRUD Disponibles
+
+| Operación  | Método | Endpoint            | Autenticación   | Descripción             |
+| ---------- | ------ | ------------------- | --------------- | ----------------------- |
+| **READ**   | GET    | `/api/products`     | ❌ Pública      | Ver todos los productos |
+| **CREATE** | POST   | `/api/products`     | ✅ IP Requerida | Crear producto          |
+| **UPDATE** | PUT    | `/api/products/:id` | ✅ IP Requerida | Editar producto         |
+| **DELETE** | DELETE | `/api/products/:id` | ✅ IP Requerida | Eliminar producto       |
+
+> ✅ Solo tu IP (`91.117.234.145`) puede crear, editar o eliminar productos
+
+---
+
+## 🔐 Restricción por IP
+
+### ¿Por qué?
+
+Solo tú (desde tu IP) puedes modificar el catálogo. Los visitantes pueden ver pero no cambiar.
+
+### ¿Cómo funciona?
+
+1. Cuando intentas crear/editar/eliminar un producto
+2. El servidor valida tu IP contra `ALLOWED_IPS` en `.env`
+3. Si está autorizada: ✅ Operación permitida
+4. Si no está autorizada: ❌ Error 403 Forbidden
+
+### Cambiar IPs autorizadas
+
+Edita `.env`:
+
+```env
+ALLOWED_IPS=91.117.234.145,192.168.1.1,127.0.0.1
+```
+
+---
+
+## 🧪 Scripts Disponibles
+
+```bash
+# Desarrollo
+npm run dev              # Lanza backend en modo desarrollo
+
+# Frontend
+npm run dev --prefix frontend      # Lanza frontend en desarrollo
+npm run build --prefix frontend    # Construye para producción
+
+# Build completo
+npm run build            # Compila backend + frontend para producción
+
+# Iniciar en producción
+npm start                # Ejecuta servidor de producción
+```
+
+---
+
+## 🚀 Desplegar en Render.com
+
+### Configuración Automática
+
+1. Ve a [Render.com](https://render.com)
+2. Click en "New +" → "Web Service"
+3. Conecta tu repositorio GitHub
+4. Configura:
+   - **Build Command**: `npm run build`
+   - **Start Command**: `npm start`
+5. Agrega Environment Variables:
+   ```
+   NODE_ENV=production
+   MONGO_URI=<tu_connection_string>
+   ALLOWED_IPS=<tuIP>,127.0.0.1
+   PORT=5000
+   ```
+
+Para detalles completos, ver [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+---
+
+## 🎨 Características Principales
+
+### Frontend
+
+- **UI Moderna**: Diseño limpio con Chakra UI
+- **Modo Oscuro**: Tema adaptable
+- **Validación en Tiempo Real**: Feedback inmediato al usuario
+- **Preview de Imágenes**: Ve la imagen mientras escribes la URL
+- **Responsivo**: Funciona perfecto en móvil, tablet y desktop
+
+### Backend
+
+- **API RESTful**: Endpoints bien estructurados
+- **Validación de Datos**: Verifica que no falten campos
+- **Manejo de Errores**: Respuestas consistentes
+- **Logs**: Seguimiento de operaciones y accesos
+- **Seguridad**: Restricción por IP en operaciones sensibles
+
+---
+
+## 💡 Flujo de Uso
+
+### Para Ver Productos (Cualquiera)
+
+1. Abre http://localhost:5173/
+2. La página carga automáticamente todos los productos
+3. Ves nombre, precio e imagen de cada uno
+
+### Para Añadir/Editar/Eliminar (Solo tu IP)
+
+1. Navega a "Create New Product"
+2. Completa los campos
+3. El servidor valida tu IP
+4. Si es autorizada: producto guardado ✅
+5. Si no es autorizada: error 403 ❌
+
+---
+
+## 🐛 Solución de Problemas
+
+### "Cannot GET /"
+
+- ✅ Verifica que el backend está corriendo en otra terminal
+
+### "Connection refused"
+
+- ✅ Comprueba que MongoDB Atlas está activo
+- ✅ Verifica que tu IP está en la whitelist de MongoDB Atlas
+
+### "Access denied. Your IP is not authorized"
+
+- ✅ Solo tu IP puede modificar
+- ✅ Los visitantes pueden ver pero no editar
+
+### "npm: command not found"
+
+- ✅ Instala Node.js desde [nodejs.org](https://nodejs.org/)
+
+---
+
+## 📚 Archivos Importantes
+
+| Archivo                                        | Propósito                           |
+| ---------------------------------------------- | ----------------------------------- |
+| `.env`                                         | Variables de entorno (NO versionar) |
+| `.env.example`                                 | Template de `.env` (SÍ versionar)   |
+| `backend/server.js`                            | Servidor principal                  |
+| `frontend/src/App.jsx`                         | Componente raíz                     |
+| `backend/middleware/ipWhitelist.middleware.js` | Validación de IP                    |
+| `package.json`                                 | Scripts y dependencias              |
+
+---
+
+## 🌟 Aprendizajes Clave
+
+Este proyecto demuestra:
+
+- ✅ **Full-Stack Development**: Frontend + Backend + Base de Datos
+- ✅ **Comunicación Cliente-Servidor**: API REST
+- ✅ **Gestión de Estado**: Zustand en frontend
+- ✅ **Async/Await**: Operaciones asincrónicas
+- ✅ **Seguridad**: Restricción por IP
+- ✅ **Variables de Entorno**: Configuración segura
+- ✅ **Deployment**: Desplegar en producción
