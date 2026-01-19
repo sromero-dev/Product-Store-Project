@@ -16,7 +16,7 @@ app.use(express.json()); // Allows JSON data
 
 app.use("/api/products", productRouter); // Product routes (redirect to products.route.js)
 
-if (process.dotenv.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/build")));
 
   app.get("*", (req, res) => {
