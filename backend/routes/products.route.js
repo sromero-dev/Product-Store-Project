@@ -5,21 +5,14 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controller/product.controller.js";
-import { ipWhitelist } from "../middleware/ipWhitelist.middleware.js";
+import { adminAuth } from "../middleware/adminAuth.middleware.js";
 
 export const router = express.Router(); // Creates a router instance
 
-// IP whitelist middleware - only in development
-// In production on Render, IP whitelist is disabled for easier access
-const requireIPWhitelist =
-  process.env.NODE_ENV === "development"
-    ? ipWhitelist
-    : (req, res, next) => next();
-
-// /api/products - GET is public, POST/PUT/DELETE require IP whitelist (dev only)
+// /api/products - GET is public, POST/PUT/DELETE require admin password
 router.get("/", getProducts); // Anyone can view products
-router.post("/", requireIPWhitelist, addProduct); // Create requires whitelist (dev) or open (prod)
-router.put("/:id", requireIPWhitelist, updateProduct); // Update requires whitelist (dev) or open (prod)
-router.delete("/:id", requireIPWhitelist, deleteProduct); // Delete requires whitelist (dev) or open (prod)
+router.post("/", adminAuth, addProduct); // Create requires admin password
+router.put("/:id", adminAuth, updateProduct); // Update requires admin password
+router.delete("/:id", adminAuth, deleteProduct); // Delete requires admin password
 
 export default router; // Export the router to be used in server.js

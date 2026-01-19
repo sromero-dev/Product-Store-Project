@@ -3,7 +3,7 @@ import { create } from "zustand";
 export const useProductStore = create((set) => ({
   products: [],
   setProducts: (products) => set({ products }),
-  createProduct: async (newProduct) => {
+  createProduct: async (newProduct, adminPassword) => {
     if (!newProduct.name || !newProduct.price || !newProduct.image) {
       return { success: false, message: "Please fill in all fields." };
     }
@@ -21,7 +21,7 @@ export const useProductStore = create((set) => ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newProduct),
+      body: JSON.stringify({ ...newProduct, adminPassword }),
     });
 
     const data = await res.json();
@@ -45,9 +45,13 @@ export const useProductStore = create((set) => ({
     set({ products: data.data });
   },
 
-  deleteProduct: async (pid) => {
+  deleteProduct: async (pid, adminPassword) => {
     const res = await fetch(`/api/products/${pid}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ adminPassword }),
     });
 
     const data = await res.json();
@@ -59,13 +63,13 @@ export const useProductStore = create((set) => ({
     return { success: true, message: "Product deleted successfully." };
   },
 
-  updateProduct: async (pid, updatedProduct) => {
-    const res = await fetch(`api/products/${pid}`, {
+  updateProduct: async (pid, updatedProduct, adminPassword) => {
+    const res = await fetch(`/api/products/${pid}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedProduct),
+      body: JSON.stringify({ ...updatedProduct, adminPassword }),
     });
     const data = await res.json();
     if (!data.success) return { success: false, message: data.message };

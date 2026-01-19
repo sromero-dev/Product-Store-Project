@@ -12,6 +12,7 @@ import {
 import { toaster } from "../components/ui/toaster";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
+import { AdminPasswordModal } from "../components/AdminPasswordModal";
 
 const CreatePage = () => {
   const [newProduct, setNewProduct] = useState({
@@ -21,11 +22,19 @@ const CreatePage = () => {
   });
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { createProduct } = useProductStore();
 
-  const handleAddProduct = async () => {
-    const { success, message } = await createProduct(newProduct);
+  const handleAddProduct = () => {
+    // Show password modal instead of directly creating
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordConfirm = async (password) => {
+    setIsLoading(true);
+    const { success, message } = await createProduct(newProduct, password);
 
     toaster.create({
       title: success ? "Success" : "Error",
@@ -34,7 +43,12 @@ const CreatePage = () => {
       duration: 3000,
     });
 
-    if (!success) return;
+    setIsLoading(false);
+
+    if (!success) {
+      setShowPasswordModal(false);
+      return;
+    }
 
     setNewProduct({
       name: "",
@@ -42,6 +56,7 @@ const CreatePage = () => {
       image: "",
     });
     setImageError(false);
+    setShowPasswordModal(false);
   };
 
   const handleImageUrlChange = (e) => {
@@ -198,6 +213,13 @@ const CreatePage = () => {
             </Button>
           </VStack>
         </Box>
+
+        <AdminPasswordModal
+          isOpen={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+          onConfirm={handlePasswordConfirm}
+          isLoading={isLoading}
+        />
       </VStack>
     </Container>
   );

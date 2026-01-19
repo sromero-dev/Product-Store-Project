@@ -20,23 +20,33 @@ import { FaTrash, FaEdit } from "react-icons/fa";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
 import { toaster } from "../components/ui/toaster";
+import { AdminPasswordModal } from "./AdminPasswordModal";
 
 const ProductCard = ({ product }) => {
   const [updatedProduct, setUpdatedProduct] = useState(product);
   const [open, setOpen] = useState(false);
+  const [showDeletePasswordModal, setShowDeletePasswordModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { deleteProduct, updateProduct } = useProductStore();
 
-  const handleDeleteProduct = async (pid) => {
-    const { success, message } = await deleteProduct(pid);
+  const handleDeleteProduct = async (pid, adminPassword) => {
+    setIsDeleting(true);
+    const { success, message } = await deleteProduct(pid, adminPassword);
     toaster.create({
       title: success ? "Success" : "Error",
       description: message,
       type: success ? "success" : "error",
       duration: 3000,
     });
+    setIsDeleting(false);
+    setShowDeletePasswordModal(false);
   };
 
-  const handleUpdateProduct = async (pid, updatedProduct) => {
+  const handleDeleteClick = () => {
+    setShowDeletePasswordModal(true);
+  };
+
+  const handleUpdateProduct = async (pid, updatedProduct, adminPassword) => {
     const price = updatedProduct.price;
 
     if (!price || price.trim() === "" || price < 0) return;
@@ -82,7 +92,7 @@ const ProductCard = ({ product }) => {
     const roundedPrice = numericPrice.toFixed(2);
     updatedProduct.price = roundedPrice.toString();
 
-    const { success, message } = await updateProduct(pid, updatedProduct);
+    const { success, message } = await updateProduct(pid, updatedProduct, adminPassword);
     setOpen(false);
     toaster.create({
       title: success ? "Success" : "Error",
@@ -132,7 +142,7 @@ const ProductCard = ({ product }) => {
             <FaEdit />
           </IconButton>
           <IconButton
-            onClick={() => handleDeleteProduct(product._id)}
+            onClick={handleDeleteClick}
             colorPalette="red"
             size={"sm"}
           >
@@ -213,6 +223,13 @@ const ProductCard = ({ product }) => {
           </Dialog.Positioner>
         </Portal>
       </Dialog.Root>
+
+      <AdminPasswordModal
+        isOpen={showDeletePasswordModal}
+        onClose={() => setShowDeletePasswordModal(false)}
+        onConfirm={(password) => handleDeleteProduct(product._id, password)}
+        isLoading={isDeleting}
+      />
     </Box>
   );
 };

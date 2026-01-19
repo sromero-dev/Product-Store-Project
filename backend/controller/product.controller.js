@@ -13,15 +13,18 @@ export const getProducts = async (req, res) => {
 
 export const addProduct = async (req, res) => {
   // Logic to add a new product
-  const product = req.body;
+  let product = req.body;
 
-  if (!product.name || !product.price || !product.image) {
+  // Remove adminPassword from the product object before saving
+  const { adminPassword, ...productData } = product;
+
+  if (!productData.name || !productData.price || !productData.image) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required." });
   }
 
-  const newProduct = new Product(product);
+  const newProduct = new Product(productData);
 
   try {
     await newProduct.save();
@@ -34,7 +37,10 @@ export const addProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const product = req.body;
+  let product = req.body;
+
+  // Remove adminPassword from the product object before updating
+  const { adminPassword, ...productData } = product;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -43,7 +49,7 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(id, product, {
+    const updatedProduct = await Product.findByIdAndUpdate(id, productData, {
       new: true, // Return the updated document
     });
     res.status(200).json({ success: true, data: updatedProduct });
