@@ -8,8 +8,6 @@ const ALLOWED_IPS = process.env.ALLOWED_IPS
   ? process.env.ALLOWED_IPS.split(",").map((ip) => ip.trim())
   : ["127.0.0.1", "::1"];
 
-console.log("[IP Whitelist] Allowed IPs:", ALLOWED_IPS);
-
 export const ipWhitelist = (req, res, next) => {
   // Get client IP from multiple sources (in order of preference)
   let clientIP =
@@ -40,10 +38,6 @@ export const ipWhitelist = (req, res, next) => {
 
   // Trim whitespace
   clientIP = clientIP?.trim() || "UNKNOWN";
-
-  console.log(`[IP Check] Resolved IP: ${clientIP}`);
-  console.log(`[IP Check] Attempt from IP: ${clientIP}`);
-  console.log(`[IP Check] Whitelist:`, ALLOWED_IPS);
 
   if (ALLOWED_IPS.includes(clientIP)) {
     console.log(`[IP Check] ✅ Access granted for IP: ${clientIP}`);
