@@ -8,6 +8,8 @@ const ALLOWED_IPS = process.env.ALLOWED_IPS
   ? process.env.ALLOWED_IPS.split(",").map((ip) => ip.trim())
   : ["127.0.0.1", "::1"];
 
+console.log("[IP Whitelist] Initialized with allowed IPs:", ALLOWED_IPS);
+
 export const ipWhitelist = (req, res, next) => {
   // Get client IP from multiple sources (in order of preference)
   let clientIP =
@@ -18,8 +20,8 @@ export const ipWhitelist = (req, res, next) => {
     req.ip || // Express IP
     "UNKNOWN";
 
-  console.log(`[IP Check] Raw IP: ${clientIP}`);
-  console.log(`[IP Check] Request object keys:`, {
+  console.log(`[IP Check] Raw IP detected: ${clientIP}`);
+  console.log(`[IP Check] Request debug:`, {
     ip: req.ip,
     remoteAddress: req.connection?.remoteAddress,
     socketRemoteAddress: req.socket?.remoteAddress,
@@ -29,24 +31,32 @@ export const ipWhitelist = (req, res, next) => {
   // Handle IPv6 mapped IPv4 addresses (e.g., ::ffff:192.0.2.1)
   if (clientIP && clientIP.startsWith("::ffff:")) {
     clientIP = clientIP.slice(7);
+    console.log(`[IP Check] Converted from IPv6 mapped to: ${clientIP}`);
   }
 
   // Remove port number if present
   if (clientIP && clientIP.includes(":")) {
+    const beforePort = clientIP;
     clientIP = clientIP.split(":")[0];
+    console.log(`[IP Check] Removed port: ${beforePort} -> ${clientIP}`);
   }
 
   // Trim whitespace
   clientIP = clientIP?.trim() || "UNKNOWN";
 
+  console.log(`[IP Check] Final resolved IP: ${clientIP}`);
+  console.log(`[IP Check] Allowed IPs: ${ALLOWED_IPS.join(", ")}`);
+  console.log(`[IP Check] IP in whitelist: ${ALLOWED_IPS.includes(clientIP)}`);
+
   if (ALLOWED_IPS.includes(clientIP)) {
-    console.log(`[IP Check] ✅ Access granted for IP: ${clientIP}`);
+    console.log(`[IP Check] ✅ ACCESS GRANTED for IP: ${clientIP}`);
     next();
   } else {
-    console.log(`[IP Check] ❌ Access denied for IP: ${clientIP}`);
+    console.log(`[IP Check] ❌ ACCESS DENIED for IP: ${clientIP}`);
+    console.log(`[IP Check] Expected one of:`, ALLOWED_IPS);
     return res.status(403).json({
       success: false,
-      message: `Access denied. Your IP (${clientIP}) is not authorized to perform this action. Contact administrator if you believe this is an error.`,
+      message: `Access denied. Your IP (${clientIP}) is not authorized to perform this action. Allowed IPs: ${ALLOWED_IPS.join(", ")}`,
     });
   }
 };
