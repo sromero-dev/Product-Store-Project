@@ -1,11 +1,14 @@
-// Middleware to restrict access to certain operations based on IP whitelist
-// Usage: app.post('/api/products', ipWhitelist, addProduct)
+import dotenv from "dotenv";
 
-const ALLOWED_IPS = [
-  "91.117.234.145", // Your home/office IP
-  "127.0.0.1",      // localhost (for local development)
-  "::1",             // localhost IPv6 (for local development)
-];
+dotenv.config();
+
+// Get allowed IPs from environment variable (comma-separated)
+// Falls back to localhost if not configured
+const ALLOWED_IPS = process.env.ALLOWED_IPS
+  ? process.env.ALLOWED_IPS.split(",").map((ip) => ip.trim())
+  : ["127.0.0.1", "::1"];
+
+console.log("[IP Whitelist] Allowed IPs:", ALLOWED_IPS);
 
 export const ipWhitelist = (req, res, next) => {
   // Get client IP from request
