@@ -95,7 +95,6 @@ Gestiona todo el estado de productos:
   </StrictMode>
   );
 
-````
 
 **🔍 Explicación:**
 
@@ -122,7 +121,7 @@ function App() {
     </>
   );
 }
-````
+```
 
 **🔍 Explicación:**
 
