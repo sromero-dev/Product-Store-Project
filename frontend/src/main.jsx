@@ -5,14 +5,20 @@ import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import { ColorModeProvider } from "./components/ui/color-mode";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
+try {
+  createRoot(document.getElementById("root")).render(
+    <StrictMode>
       <ChakraProvider value={defaultSystem}>
-        <ColorModeProvider>
-          <App />
-        </ColorModeProvider>
+        <BrowserRouter>
+          <ColorModeProvider>
+            <App />
+          </ColorModeProvider>
+        </BrowserRouter>
       </ChakraProvider>
-    </BrowserRouter>
-  </StrictMode>
-);
+    </StrictMode>,
+  );
+} catch (error) {
+  console.error("Failed to mount app:", error);
+  document.getElementById("root").innerHTML =
+    `<h1 style="color: red;">Error: ${error.message}</h1>`;
+}

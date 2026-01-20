@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Box, Button, Input, VStack, HStack, Heading } from "@chakra-ui/react";
 
 export const AdminPasswordModal = ({
   isOpen,
@@ -29,41 +21,66 @@ export const AdminPasswordModal = ({
     onClose();
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && password.trim() && !isLoading) {
+      handleSubmit();
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Admin Password Required</DialogTitle>
-          <DialogDescription>
-            Enter the admin password to create or delete products
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
+    <Box
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      bg="blackAlpha.600"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      zIndex={1000}
+      onClick={handleClose}
+    >
+      <Box
+        bg="white"
+        _dark={{ bg: "gray.800" }}
+        borderRadius="lg"
+        p={6}
+        maxW="400px"
+        w="90%"
+        onClick={(e) => e.stopPropagation()}
+        boxShadow="lg"
+      >
+        <Heading size="md" mb={4}>
+          Admin Password Required
+        </Heading>
+        <VStack gap={4}>
           <Input
             type="password"
             placeholder="Enter admin password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+            onKeyDown={handleKeyDown}
             disabled={isLoading}
+            autoFocus
           />
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={isLoading || !password.trim()}
-            >
-              {isLoading ? "Verifying..." : "Confirm"}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </VStack>
+        <HStack gap={2} mt={6} justify="flex-end">
+          <Button variant="ghost" onClick={handleClose} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button
+            colorPalette="blue"
+            onClick={handleSubmit}
+            disabled={isLoading || !password.trim()}
+            isLoading={isLoading}
+          >
+            {isLoading ? "Verifying..." : "Confirm"}
+          </Button>
+        </HStack>
+      </Box>
+    </Box>
   );
 };

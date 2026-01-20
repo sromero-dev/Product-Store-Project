@@ -6,25 +6,18 @@ import {
   IconButton,
   Image,
   Input,
-  InputGroup,
   Text,
   VStack,
-  Dialog,
-  Portal,
-  FormatNumber,
-  Field,
-  defineStyle,
-  useControllableState,
 } from "@chakra-ui/react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
-import { toaster } from "../components/ui/toaster";
+import { toaster } from "./ui/toaster";
 import { AdminPasswordModal } from "./AdminPasswordModal";
 
 const ProductCard = ({ product }) => {
   const [updatedProduct, setUpdatedProduct] = useState(product);
-  const [open, setOpen] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeletePasswordModal, setShowDeletePasswordModal] = useState(false);
   const [showUpdatePasswordModal, setShowUpdatePasswordModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -103,7 +96,7 @@ const ProductCard = ({ product }) => {
       updatedProduct,
       adminPassword,
     );
-    setOpen(false);
+    setShowUpdateModal(false);
     setIsUpdating(false);
     setShowUpdatePasswordModal(false);
     toaster.create({
@@ -138,101 +131,104 @@ const ProductCard = ({ product }) => {
 
         <Text
           fontWeight="bold"
-          fontSize="md"
+          fontSize="lg"
           color={{ base: "gray.600", _dark: "gray.200" }}
           mb={4}
         >
-          <FormatNumber value={product.price} style="currency" currency="EUR" />
+          €{parseFloat(product.price).toFixed(2)}
         </Text>
 
         <HStack gap={2}>
           <IconButton
-            size={"sm"}
-            onClick={() => setOpen(true)}
+            size="sm"
             colorPalette="blue"
+            onClick={() => setShowUpdateModal(true)}
           >
             <FaEdit />
           </IconButton>
-          <IconButton
-            onClick={handleDeleteClick}
-            colorPalette="red"
-            size={"sm"}
-          >
+          <IconButton onClick={handleDeleteClick} colorPalette="red" size="sm">
             <FaTrash />
           </IconButton>
         </HStack>
       </Box>
 
-      <Dialog.Root
-        placement={"center"}
-        open={open}
-        onOpenChange={(e) => setOpen(e.open)}
-      >
-        <Portal>
-          <Dialog.Backdrop />
-          <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.Header>
-                <Dialog.Title>Update Product</Dialog.Title>
-              </Dialog.Header>
-              <Dialog.Body>
-                <VStack gap={5} pt={2}>
-                  <FloatingLabelInput
-                    label="Product Name"
-                    value={updatedProduct.name}
-                    onChange={(e) =>
-                      setUpdatedProduct({
-                        ...updatedProduct,
-                        name: e.target.value,
-                      })
-                    }
-                  />
-                  <InputGroup startElement="€" endElement="EUR">
-                    <Input
-                      placeholder="Price"
-                      name="price"
-                      type="string"
-                      value={updatedProduct.price}
-                      onChange={(e) =>
-                        setUpdatedProduct({
-                          ...updatedProduct,
-                          price: e.target.value,
-                        })
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup startElement="https://">
-                    <Input
-                      placeholder="Image URL"
-                      name="image"
-                      value={updatedProduct.image}
-                      onChange={(e) =>
-                        setUpdatedProduct({
-                          ...updatedProduct,
-                          image: e.target.value,
-                        })
-                      }
-                    />
-                  </InputGroup>
-                </VStack>
-              </Dialog.Body>
-
-              <Dialog.Footer>
-                <Button
-                  colorPalette="blue"
-                  marginBottom={1}
-                  onClick={handleUpdateClick}
-                >
-                  Save
-                </Button>
-                <Dialog.CloseTrigger asChild>
-                  <Button variant="ghost">Cancel</Button>
-                </Dialog.CloseTrigger>
-              </Dialog.Footer>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
+      {/* Update Modal */}
+      {showUpdateModal && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="blackAlpha.600"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={1000}
+          onClick={() => setShowUpdateModal(false)}
+        >
+          <Box
+            bg="white"
+            _dark={{ bg: "gray.800" }}
+            borderRadius="lg"
+            p={6}
+            maxW="500px"
+            w="90%"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Heading size="md" mb={4}>
+              Update Product
+            </Heading>
+            <VStack gap={4}>
+              <Input
+                placeholder="Product Name"
+                value={updatedProduct.name}
+                onChange={(e) =>
+                  setUpdatedProduct({
+                    ...updatedProduct,
+                    name: e.target.value,
+                  })
+                }
+              />
+              <Input
+                placeholder="Price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={updatedProduct.price}
+                onChange={(e) =>
+                  setUpdatedProduct({
+                    ...updatedProduct,
+                    price: e.target.value,
+                  })
+                }
+              />
+              <Input
+                placeholder="Image URL"
+                value={updatedProduct.image}
+                onChange={(e) =>
+                  setUpdatedProduct({
+                    ...updatedProduct,
+                    image: e.target.value,
+                  })
+                }
+              />
+            </VStack>
+            <HStack gap={2} mt={6}>
+              <Button colorPalette="blue" onClick={handleUpdateClick} flex={1}>
+                Save
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowUpdateModal(false)}
+                flex={1}
+              >
+                Cancel
+              </Button>
+            </HStack>
+          </Box>
+        </Box>
+      )}
 
       <AdminPasswordModal
         isOpen={showDeletePasswordModal}
@@ -254,68 +250,3 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
-
-const FloatingLabelInput = (props) => {
-  const { label, onValueChange, value, defaultValue = "", ...rest } = props;
-
-  const [inputState, setInputState] = useControllableState({
-    defaultValue,
-    onChange: onValueChange,
-    value,
-  });
-
-  const [focused, setFocused] = useState(false);
-  const shouldFloat = inputState?.length > 0 || focused || value?.length > 0;
-
-  return (
-    <Box pos="relative" w="full">
-      <Input
-        {...rest}
-        placeholder=" "
-        onFocus={(e) => {
-          props.onFocus?.(e);
-          setFocused(true);
-        }}
-        onBlur={(e) => {
-          props.onBlur?.(e);
-          setFocused(false);
-        }}
-        onChange={(e) => {
-          props.onChange?.(e);
-          setInputState(e.target.value);
-        }}
-        value={inputState}
-        data-float={shouldFloat || undefined}
-        pt="4"
-        pb="1"
-        h="12"
-      />
-      <Field.Label css={floatingStyles} data-float={shouldFloat || undefined}>
-        {label}
-      </Field.Label>
-    </Box>
-  );
-};
-
-const floatingStyles = defineStyle({
-  pos: "absolute",
-  bg: "bg",
-  px: "0.5",
-  top: "3",
-  insetStart: "3",
-  fontWeight: "normal",
-  pointerEvents: "none",
-  transition: "all 0.2s ease-out",
-  color: "fg.muted",
-  _dark: {
-    bg: "gray.800",
-  },
-  "&[data-float]": {
-    top: "-2.5",
-    insetStart: "2",
-    color: "blue.500",
-    fontSize: "sm",
-    fontWeight: "medium",
-    zIndex: 2,
-  },
-});

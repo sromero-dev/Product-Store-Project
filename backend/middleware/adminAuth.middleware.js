@@ -5,6 +5,10 @@ dotenv.config();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 console.log("[Admin Auth] Password middleware initialized");
+console.log(
+  "[Admin Auth] ADMIN_PASSWORD is set:",
+  !!process.env.ADMIN_PASSWORD,
+);
 
 export const adminAuth = (req, res, next) => {
   // Get password from request body or headers
@@ -12,6 +16,9 @@ export const adminAuth = (req, res, next) => {
 
   console.log(
     `[Admin Auth] Received password: ${password ? "***" : "MISSING"}`,
+  );
+  console.log(
+    `[Admin Auth] Expected password: ${ADMIN_PASSWORD ? "***" : "MISSING"}`,
   );
 
   if (!password) {
@@ -23,7 +30,9 @@ export const adminAuth = (req, res, next) => {
   }
 
   if (password !== ADMIN_PASSWORD) {
-    console.log(`[Admin Auth] ❌ ACCESS DENIED - Incorrect password`);
+    console.log(
+      `[Admin Auth] ❌ ACCESS DENIED - Incorrect password. Got: ${password}, Expected: ${ADMIN_PASSWORD}`,
+    );
     return res.status(403).json({
       success: false,
       message: "Incorrect admin password",
