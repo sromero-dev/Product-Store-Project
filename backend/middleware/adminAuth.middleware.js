@@ -17,9 +17,6 @@ export const adminAuth = (req, res, next) => {
   console.log(
     `[Admin Auth] Received password: ${password ? "***" : "MISSING"}`,
   );
-  console.log(
-    `[Admin Auth] Expected password: ${ADMIN_PASSWORD ? "***" : "MISSING"}`,
-  );
 
   if (!password) {
     console.log(`[Admin Auth] ❌ ACCESS DENIED - No password provided`);
@@ -30,9 +27,7 @@ export const adminAuth = (req, res, next) => {
   }
 
   if (password !== ADMIN_PASSWORD) {
-    console.log(
-      `[Admin Auth] ❌ ACCESS DENIED - Incorrect password. Got: ${password}, Expected: ${ADMIN_PASSWORD}`,
-    );
+    console.log(`[Admin Auth] ❌ ACCESS DENIED - Incorrect password`);
     return res.status(403).json({
       success: false,
       message: "Incorrect admin password",
