@@ -1,6 +1,6 @@
 # 🛍️ Product Store
 
-Una aplicación **full-stack moderna** para gestión de productos con operaciones CRUD completas. Perfecta para aprender desarrollo web contemporáneo.
+Una aplicación **full-stack moderna** para gestión de productos con operaciones CRUD completas. Construida con React 19, Node.js/Express y MongoDB.
 
 ## 📋 ¿Qué es Product Store?
 
@@ -13,12 +13,13 @@ Una aplicación **full-stack moderna** para gestión de productos con operacione
 
 **Características principales:**
 
-- 🎨 Interfaz moderna con Chakra UI
+- 🎨 Interfaz moderna con Chakra UI v3
 - 🔐 Autenticación por contraseña para operaciones sensibles
 - 📱 Diseño responsive (móvil, tablet, desktop)
-- 🌓 Modo claro/oscuro
+- 🌓 Modo claro/oscuro con persistencia
 - ⚡ Gestión de estado eficiente con Zustand
 - 🚀 API RESTful con Node.js + Express
+- 💾 Base de datos MongoDB
 
 ---
 
@@ -26,19 +27,20 @@ Una aplicación **full-stack moderna** para gestión de productos con operacione
 
 ### Frontend
 
-- **React 19** - Librería UI
-- **Chakra UI v3** - Sistema de diseño
-- **Zustand** - Gestión de estado global
+- **React 19** - Librería UI moderna
+- **Chakra UI v3** - Sistema de diseño y componentes accesibles
+- **Zustand** - Gestión de estado global minimalista
 - **Vite** - Build tool ultra rápido
-- **React Router** - Navegación
-- **React Icons** - Iconografía
+- **React Router 7** - Enrutamiento cliente
+- **React Icons** - Librería de iconos
 
 ### Backend
 
 - **Node.js** - Runtime JavaScript
 - **Express.js** - Framework web
-- **MongoDB** + **Mongoose** - Base de datos
-- **dotenv** - Variables de entorno
+- **MongoDB** - Base de datos NoSQL
+- **Mongoose** - ODM para MongoDB
+- **dotenv** - Gestión de variables de entorno
 
 ---
 
@@ -48,8 +50,7 @@ Una aplicación **full-stack moderna** para gestión de productos con operacione
 
 - **Node.js** (v18+) - [Descargar](https://nodejs.org/)
 - **npm** (viene con Node.js)
-- **Git** - [Descargar](https://git-scm.com/)
-- **MongoDB URI** - [Crear cluster gratis en MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- **MongoDB Atlas** (gratuito) - [Crear cuenta](https://www.mongodb.com/cloud/atlas)
 
 ### Pasos para Ejecutar Localmente
 
@@ -220,8 +221,6 @@ npm start                # Ejecuta servidor de producción
    ADMIN_PASSWORD=<contraseña-segura>
    PORT=5000
    ```
-
-Para detalles completos, ver [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ---
 

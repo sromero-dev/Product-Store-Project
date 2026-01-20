@@ -1,22 +1,24 @@
-# 🛍️ Product Store API - Documentación Técnica
+# 🛍️ Backend - Product Store API
 
-## 📋 Descripción General
-
-Esta es una **API RESTful para una tienda de productos** construida con **Node.js, Express y MongoDB**. Proporciona operaciones CRUD (Create, Read, Update, Delete) para gestionar productos en una base de datos.
+API RESTful construida con **Node.js, Express y MongoDB** para gestión completa de productos con operaciones CRUD.
 
 ## 🏗️ Estructura del Proyecto
 
 ```
 backend/
 ├── config/
-│   └── db.js                 # Configuración de la base de datos
-├── controllers/
-│   └── product.controller.js # Lógica de negocio para productos
+│   └── db.js                      # Conexión MongoDB
+├── controller/
+│   └── product.controller.js      # Lógica de negocio
+├── middleware/
+│   └── adminAuth.middleware.js    # Autenticación admin
 ├── models/
-│   └── product.model.js      # Modelo de datos de productos
+│   └── product.model.js           # Schema Mongoose
 ├── routes/
-│   └── products.route.js     # Definición de rutas de la API
-└── server.js                 # Punto de entrada de la aplicación
+│   └── products.route.js          # Rutas API
+├── server.js                      # Punto de entrada
+├── .env                           # Variables de entorno
+└── package.json                   # Dependencias
 ```
 
 ## 📦 Dependencias (package.json)
@@ -25,10 +27,9 @@ backend/
 
 ```json
 "dependencies": {
-  "express": "^4.19.2",    // Framework web para Node.js
-  "mongoose": "^8.20.0",   // ODM para MongoDB
-  "dotenv": "^17.2.3",     // Manejo de variables de entorno
-  "mongodb": "^7.0.0"      // Driver oficial de MongoDB
+  "express": "^4.19.2",      // Framework web
+  "mongoose": "^8.20.0",     // ODM para MongoDB
+  "dotenv": "^17.2.3"        // Variables de entorno
 }
 ```
 
@@ -36,66 +37,57 @@ backend/
 
 ```json
 "devDependencies": {
-  "nodemon": "^3.1.11"     // Reinicio automático en desarrollo
+  "nodemon": "^3.1.11"       // Reinicio automático en dev
 }
 ```
 
-### ⚙️ Explicación de package.json
+### ⚙️ Scripts Disponibles
 
-- **`"type": "module"`**: Habilita el uso de sintaxis ES6 (import/export)
-- **`"main": "index.js"`**: Archivo principal de la aplicación
-- **`"scripts"`**: Comandos ejecutables con npm
-  - `npm run dev`: Ejecuta con nodemon para desarrollo
-  - `npm test`: Ejecuta tests (aún no implementado)
-
-## 🔧 Componentes del Backend
-
-### **1. server.js - Servidor Principal**
-
-```javascript
-import express from "express";
-import dotenv from "dotenv";
-import { connectDB } from "./config/db.js";
-import productRouter from "./routes/products.route.js";
-
-dotenv.config(); // Carga variables de entorno
-
-const app = express();
-app.use(express.json()); // Middleware para parsear JSON
-
-app.use("/api/products", productRouter); // Monta las rutas de productos
-
-app.listen(3000, () => {
-  connectDB(); // Conecta a la base de datos al iniciar
-  console.log("Server is running at http://localhost:3000");
-});
+```bash
+npm run dev        # Ejecuta servidor con nodemon (desarrollo)
+npm test           # Ejecuta tests (no implementado)
 ```
 
-### **2. db.js - Conexión a la Base de Datos**
+**Opciones de ejecución:**
 
-```javascript
-export const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.log(error);
-    process.exit(1); // Termina el proceso con error
-  }
-};
+```bash
+# Desarrollo local (con recarga automática)
+npm run dev
+
+# Producción
+node server.js
+
+# Con variables de entorno específicas
+NODE_ENV=production npm start
 ```
 
-### **3. product.model.js - Modelo de Datos**
+## � Ejecutar el Backend
 
-```javascript
-const productSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    price: { type: Number, required: true },
-    image: { type: String, required: true },
-  },
-  { timestamps: true } // Agrega createdAt y updatedAt automáticamente
-);
+### Requisitos
+
+- Node.js v18+
+- MongoDB Atlas (gratis)
+
+### Instalación
+
+```bash
+# Instalar dependencias
+npm install
+
+# Crear archivo .env
+# PORT=5000
+# NODE_ENV=development
+# MONGO_URI=mongodb+srv://usuario:password@cluster.mongodb.net/products
+
+# Ejecutar servidor
+npm run dev
+```
+
+**Salida esperada:**
+
+```
+Server is running at http://localhost:5000
+MongoDB Connected: cluster0.mongodb.net
 ```
 
 ### **4. product.controller.js - Lógica de Negocio**
@@ -161,7 +153,7 @@ export const getProducts = (req, res) => {
   Product.find({})
     .then((products) => res.status(200).json({ success: true, data: products }))
     .catch((error) =>
-      res.status(500).json({ success: false, message: "Server Error" })
+      res.status(500).json({ success: false, message: "Server Error" }),
     );
 };
 

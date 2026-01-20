@@ -1,62 +1,101 @@
-# 🎨 Frontend - Product Store (React + JavaScript)
+# 🎨 Frontend - Product Store
 
-## 📋 Descripción General
-
-El frontend de **Product Store** es una aplicación React moderna que proporciona una interfaz de usuario completa para gestionar productos. Implementa operaciones CRUD completas (Crear, Leer, Actualizar, Eliminar) con una interfaz intuitiva y responsive.
+Interfaz moderna construida con **React 19, Chakra UI v3 y Vite** para una plataforma de gestión de productos.
 
 ## 🏗️ Arquitectura del Frontend
 
 ```
 src/
 ├── components/
-│   ├── Navbar.jsx           # Barra de navegación global
-│   ├── ProductCard.jsx      # Tarjeta de producto con CRUD
+│   ├── AdminPasswordModal.jsx    # Modal de contraseña
+│   ├── Navbar.jsx                # Barra de navegación
+│   ├── ProductCard.jsx           # Tarjeta de producto
 │   └── ui/
-│       ├── color-mode.jsx   # Gestión del tema claro/oscuro
-│       └── toaster.jsx      # Sistema de notificaciones
+│       ├── color-mode.jsx        # Gestión de tema
+│       └── toaster.jsx           # Notificaciones
 ├── pages/
-│   ├── HomePage.jsx         # Página principal con grid de productos
-│   └── CreatePage.jsx       # Formulario de creación de productos
+│   ├── HomePage.jsx              # Listado de productos
+│   └── CreatePage.jsx            # Crear producto
 ├── store/
-│   └── product.js           # Gestión del estado global (Zustand)
-├── App.jsx                  # Componente raíz de la aplicación
-└── main.jsx                 # Punto de entrada de React
+│   └── product.js                # Estado global (Zustand)
+├── App.jsx                       # Componente raíz
+├── main.jsx                      # Punto de entrada
+└── index.html
 ```
 
 ## 📦 Dependencias y Tecnologías
 
 ### **Tecnologías Principales:**
 
-- **React 18**: Biblioteca para interfaces de usuario
-- **React Router DOM**: Enrutamiento cliente-side
-- **Chakra UI v3**: Sistema de diseño y componentes
-- **Zustand**: Gestión de estado global minimalista
-- **React Icons**: Biblioteca de iconos
+- **React 19** - Librería UI moderna
+- **Chakra UI v3** - Sistema de diseño accesible
+- **Zustand** - Gestión de estado global
+- **Vite** - Build tool ultra rápido
+- **React Router 7** - Enrutamiento
+- **React Icons** - Iconografía
 
 ## 🔧 Componentes Principales
 
-### **1. main.jsx - Punto de Entrada de la Aplicación**
+### **1. main.jsx - Punto de Entrada**
 
-```javascript
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
-import { BrowserRouter } from "react-router-dom";
-import { ColorModeProvider } from "./components/ui/color-mode";
+Monta la aplicación React con todos los providers necesarios:
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ChakraProvider value={defaultSystem}>
-        <ColorModeProvider>
-          <App />
-        </ColorModeProvider>
-      </ChakraProvider>
-    </BrowserRouter>
+- ChakraProvider (diseño)
+- BrowserRouter (navegación)
+- ColorModeProvider (tema)
+
+### **2. App.jsx - Componente Raíz**
+
+Define la estructura global de la aplicación:
+
+- Navbar (siempre visible)
+- Routes (cambiar entre HomePage y CreatePage)
+- Toaster (notificaciones)
+
+### **3. HomePage.jsx**
+
+Muestra el grid de productos:
+
+- Carga automática de productos al montar
+- Grid responsivo (1 columna mobile, 2 tablet, 3 desktop)
+- Cada producto como ProductCard
+
+### **4. CreatePage.jsx**
+
+Formulario para crear productos:
+
+- Inputs para nombre, precio, URL imagen
+- Preview de imagen en tiempo real
+- Modal de contraseña para confirmar
+
+### **5. ProductCard.jsx**
+
+Tarjeta individual de producto:
+
+- Imagen, nombre, precio
+- Botones editar y eliminar
+- Modal de edición con validación
+- Modal de contraseña
+
+### **6. store/product.js - Estado Global (Zustand)**
+
+Gestiona todo el estado de productos:
+
+- `products` - Array de productos
+- `fetchProducts()` - Obtener productos del servidor
+- `createProduct()` - Crear nuevo producto
+- `updateProduct()` - Editar producto
+- `deleteProduct()` - Eliminar producto
+  <ChakraProvider value={defaultSystem}>
+  <ColorModeProvider>
+  <App />
+  </ColorModeProvider>
+  </ChakraProvider>
+  </BrowserRouter>
   </StrictMode>
-);
-```
+  );
+
+````
 
 **🔍 Explicación:**
 
@@ -83,7 +122,7 @@ function App() {
     </>
   );
 }
-```
+````
 
 **🔍 Explicación:**
 
@@ -295,7 +334,7 @@ set((state) => ({
 // Actualizaciones de elementos específicos
 set((state) => ({
   products: state.products.map((product) =>
-    product._id === pid ? { ...product, ...data.data } : product
+    product._id === pid ? { ...product, ...data.data } : product,
   ),
 }));
 ```
